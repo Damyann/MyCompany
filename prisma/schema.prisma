@@ -1,0 +1,46 @@
+// Генерира Prisma клиента (който ще ползваме в Next.js)
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Връзка към Postgres (Neon) – използва DATABASE_URL от .env
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Пол (само мъжки и женски)
+enum Gender {
+  MALE
+  FEMALE
+}
+
+// Крупие (служител)
+// Задължителни: firstName, nickname, gender, email, startDate, promotions, passwordHash
+// Незадължителни: middleName, lastName
+model Croupier {
+  id           Int      @id @default(autoincrement())
+  firstName    String
+  middleName   String?        // Презиме (по желание)
+  lastName     String?        // Фамилия (по желание)
+  nickname     String  @unique
+  gender       Gender
+  email        String  @unique
+  startDate    DateTime       // Дата на започване
+  promotions   Int      @default(0) // Брой повишения (по подразбиране 0)
+  passwordHash String          // криптирана парола
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Админ
+// Задължителни: name, passwordHash
+model Admin {
+  id           Int      @id @default(autoincrement())
+  name         String
+  passwordHash String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
