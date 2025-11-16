@@ -23,7 +23,15 @@ export async function middleware(request) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("auth_token")?.value || null;
 
-  // Ако няма токен – redirect към логина
+  // 1) Оставяме login/logout API-тата отворени
+  if (
+    pathname.startsWith("/api/login") ||
+    pathname.startsWith("/api/logout")
+  ) {
+    return NextResponse.next();
+  }
+
+  // 2) За всички други защитени пътища ИЗИСКВАМЕ токен
   if (!token) {
     const loginUrl = new URL("/", request.url);
     return NextResponse.redirect(loginUrl);
@@ -31,7 +39,6 @@ export async function middleware(request) {
 
   const payload = await verifyToken(token);
 
-  // Ако токенът е невалиден или изтекъл
   if (!payload || !payload.role) {
     const loginUrl = new URL("/", request.url);
     return NextResponse.redirect(loginUrl);
@@ -39,23 +46,32 @@ export async function middleware(request) {
 
   const role = payload.role;
 
-  // Ако пътят започва с /admin, и ролята НЕ е admin → redirect към логина
-  if (pathname.startsWith("/admin") && role !== "admin") {
+  const isAdminPath =
+    pathname.startsWith("/admin") || pathname.startsWith("/api/admin");
+  const isCroupierPath =
+    pathname.startsWith("/croupier") || pathname.startsWith("/api/croupier");
+
+  // 3) Admin страници + admin API-та -> само с role = admin
+  if (isAdminPath && role !== "admin") {
     const loginUrl = new URL("/", request.url);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Ако пътят започва с /croupier, и ролята НЕ е croupier → redirect към логина
-  if (pathname.startsWith("/croupier") && role !== "croupier") {
+  // 4) Croupier страници + croupier API-та -> само с role = croupier
+  if (isCroupierPath && role !== "croupier") {
     const loginUrl = new URL("/", request.url);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Всичко е ок – пускаме заявката
+  // 5) Всичко е ок – пускаме заявката
   return NextResponse.next();
 }
 
-// казваме на Next.js на кои пътища да се прилага middleware
+// Казваме на Next.js кои пътища са защитени от middleware
 export const config = {
-  matcher: ["/admin/:path*", "/croupier/:path*"],
+  matcher: [
+    "/admin/:path*",
+    "/croupier/:path*",
+    "/api/:path*", // всички API-та минават оттук
+  ],
 };
