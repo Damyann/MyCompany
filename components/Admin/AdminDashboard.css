@@ -1,58 +1,254 @@
-.admin-screen {
+/* Цял екран – фон в духа на логин страницата */
+.admin-layout {
   min-height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background: radial-gradient(circle at 0% 0%, #172554, #020617 50%, #020617);
+  background: radial-gradient(circle at 0% 0%, #020617, #020617 40%, #020617);
+  color: #e5e7eb;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
 }
 
-.admin-card {
-  width: 100%;
-  max-width: 800px;
-  border-radius: 24px;
-  padding: 24px 22px;
-  background:
-    radial-gradient(circle at 0 0, rgba(59, 130, 246, 0.4), transparent 55%),
-    rgba(15, 23, 42, 0.97);
+/* Лявото меню (sidebar) */
+.admin-sidebar {
+  width: 260px;
+  padding: 22px 18px;
+  border-right: 1px solid rgba(148, 163, 184, 0.3);
+  background: radial-gradient(circle at 0% 0%, #020617 0, #020617 55%, #020617);
+  box-shadow: 10px 0 35px rgba(15, 23, 42, 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Горна част с „лого“ */
+.admin-logo-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 13px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(15, 23, 42, 0.9),
+    0 14px 30px rgba(15, 23, 42, 0.9);
+}
+
+.admin-logo-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #22c55e,
+    #14b8a6,
+    #38bdf8,
+    #6366f1,
+    #22c55e
+  );
+  box-shadow:
+    0 0 10px rgba(56, 189, 248, 0.9),
+    0 0 24px rgba(56, 189, 248, 0.85);
+}
+
+.admin-logo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.admin-logo-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+.admin-logo-sub {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* Навигация */
+.admin-nav {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 13px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #e5e7eb;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease,
+    transform 0.08s ease,
+    box-shadow 0.16s ease;
+}
+
+.admin-nav-item:hover {
+  background: rgba(15, 23, 42, 0.9);
+  border-color: rgba(148, 163, 184, 0.4);
+  transform: translateY(-1px);
+}
+
+.admin-nav-item-active {
+  background: radial-gradient(circle at 0% 0%, #0f172a 0, #020617 70%);
+  border-color: rgba(94, 234, 212, 0.9);
+  box-shadow:
+    0 0 0 1px rgba(45, 212, 191, 0.65),
+    0 14px 40px rgba(8, 47, 73, 0.9);
+}
+
+.admin-nav-icon {
+  width: 22px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.admin-nav-label {
+  flex: 1;
+}
+
+/* Футър в сайдбара */
+.admin-sidebar-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.admin-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow:
+    0 0 10px rgba(34, 197, 94, 0.9),
+    0 0 20px rgba(34, 197, 94, 0.85);
+}
+
+.admin-status-text {
+  white-space: nowrap;
+}
+
+/* Главна част вдясно */
+.admin-main-body {
+  flex: 1;
+  padding-top: 16px;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.admin-placeholder-card {
+  flex: 1;
+  padding: 22px 20px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.96);
   border: 1px solid rgba(148, 163, 184, 0.5);
   box-shadow:
-    0 28px 70px rgba(15, 23, 42, 0.95),
+    0 25px 50px rgba(15, 23, 42, 0.95),
     0 0 0 1px rgba(15, 23, 42, 0.9);
-  color: #e5e7eb;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.admin-header h1 {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
 
-.admin-header p {
-  font-size: 13px;
-  color: #cbd5f5;
+/* Header на основното съдържание */
+.admin-main-header {
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
   margin-bottom: 18px;
 }
 
-.admin-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+.admin-main-header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #f9fafb;
+  margin-bottom: 4px;
 }
 
-.admin-widget {
-  border-radius: 18px;
-  padding: 16px;
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(55, 65, 81, 0.9);
+.admin-main-header p {
+  font-size: 13px;
+  color: #cbd5f5;
 }
 
-.admin-widget h2 {
+.admin-main-highlight {
+  color: #5eead4;
+}
+
+/* Тяло – засега само placeholder карта */
+.admin-main-body {
+  flex: 1;
+  padding-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-placeholder-card {
+  max-width: 500px;
+  padding: 22px 20px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  box-shadow:
+    0 25px 50px rgba(15, 23, 42, 0.95),
+    0 0 0 1px rgba(15, 23, 42, 0.9);
+  text-align: left;
+}
+
+.admin-placeholder-title {
   font-size: 15px;
-  margin-bottom: 8px;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 6px;
 }
 
-.admin-widget p {
-  font-size: 12px;
+.admin-placeholder-text {
+  font-size: 13px;
   color: #9ca3af;
+  line-height: 1.5;
+}
+
+/* Малко адаптивност за по-малки екрани */
+@media (max-width: 900px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    overflow-x: auto;
+  }
+
+  .admin-nav {
+    flex-direction: row;
+    margin-top: 0;
+  }
+
+  .admin-main {
+    padding: 18px;
+  }
 }
