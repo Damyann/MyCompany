@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { signAuthToken } from "../../../lib/auth";
 
 const prisma = new PrismaClient();
 
@@ -29,10 +30,27 @@ export async function POST(request) {
         );
       }
 
-      return NextResponse.json({
+      // Създаваме JWT токен за админ
+      const token = await signAuthToken({
+        userId: admin.id,
         role: "admin",
         name: admin.name,
       });
+
+      const res = NextResponse.json({
+        role: "admin",
+        name: admin.name,
+      });
+
+      res.cookies.set("auth_token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 8, // 8 часа
+      });
+
+      return res;
     }
 
     // 2) Ако не е админ, търсим като крупие (nickname)
@@ -49,10 +67,27 @@ export async function POST(request) {
         );
       }
 
-      return NextResponse.json({
+      // Създаваме JWT токен за крупие
+      const token = await signAuthToken({
+        userId: croupier.id,
         role: "croupier",
         nickname: croupier.nickname,
       });
+
+      const res = NextResponse.json({
+        role: "croupier",
+        nickname: croupier.nickname,
+      });
+
+      res.cookies.set("auth_token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 8,
+      });
+
+      return res;
     }
 
     // Няма такъв човек
