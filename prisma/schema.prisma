@@ -1,46 +1,111 @@
-// Генерира Prisma клиента (който ще ползваме в Next.js)
+// -----------------------------
+// Prisma Client Generator
+// -----------------------------
 generator client {
   provider = "prisma-client-js"
 }
 
-// Връзка към Postgres (Neon) – използва DATABASE_URL от .env
+// -----------------------------
+// Database Connection (PostgreSQL)
+// -----------------------------
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// Пол (само мъжки и женски)
+// -----------------------------
+// Пол (мъж / жена)
+// -----------------------------
 enum Gender {
   MALE
   FEMALE
 }
 
-// Крупие (служител)
-// Задължителни: firstName, nickname, gender, email, startDate, promotions, passwordHash
-// Незадължителни: middleName, lastName
+// -----------------------------
+// Крупиета
+// -----------------------------
 model Croupier {
-  id           Int      @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   firstName    String
-  middleName   String?        // Презиме (по желание)
-  lastName     String?        // Фамилия (по желание)
-  nickname     String  @unique
+  middleName   String?
+  lastName     String?
+  nickname     String    @unique
   gender       Gender
-  email        String  @unique
-  startDate    DateTime       // Дата на започване
-  promotions   Int      @default(0) // Брой повишения (по подразбиране 0)
-  passwordHash String          // криптирана парола
-
+  email        String    @unique
+  startDate    DateTime
+  promotions   Int       @default(0)
+  passwordHash String
+  games        Game[]    // свързани игри (many-to-many)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-// Админ
-// Задължителни: name, passwordHash
+// -----------------------------
+// Админи
+// -----------------------------
 model Admin {
   id           Int      @id @default(autoincrement())
   name         String
   passwordHash String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
+// -----------------------------
+// Питбосове
+// -----------------------------
+model Pitboss {
+  id           Int       @id @default(autoincrement())
+  firstName    String
+  middleName   String?
+  lastName     String?
+  nickname     String    @unique
+  gender       Gender
+  startDate    DateTime
+  promotions   Int       @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// -----------------------------
+// QA (Контрол на качеството)
+// -----------------------------
+model QA {
+  id           Int       @id @default(autoincrement())
+  firstName    String
+  middleName   String?
+  lastName     String?
+  nickname     String    @unique
+  gender       Gender
+  startDate    DateTime
+  promotions   Int       @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// -----------------------------
+// Training (Обучители)
+// -----------------------------
+model Training {
+  id           Int       @id @default(autoincrement())
+  firstName    String
+  middleName   String?
+  lastName     String?
+  nickname     String    @unique
+  gender       Gender
+  startDate    DateTime
+  promotions   Int       @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// -----------------------------
+// Игри (добавят се от админ менюто)
+// -----------------------------
+model Game {
+  id        Int         @id @default(autoincrement())
+  name      String
+  croupiers Croupier[]  // many-to-many към Крупиета
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
