@@ -1,24 +1,67 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 export async function GET() {
-  const croupiers = await prisma.croupier.findMany({
-    orderBy: { startDate: "asc" },
-    select: {
-      id: true,
-      firstName: true,
-      middleName: true,
-      lastName: true,
-      nickname: true,
-      gender: true,
-      email: true,
-      startDate: true,
-      // promotionCount: true, // ❌ махаме го, такова поле няма
-      // ако искаме после, можем да ползваме promotions или да добавим поле в schema.prisma
-    },
-  });
+  try {
+    const croupiers = await prisma.croupier.findMany({
+      orderBy: { id: "asc" },
+    });
 
-  return NextResponse.json({ croupiers });
+    return NextResponse.json({ croupiers });
+  } catch (err) {
+    console.error("GET error:", err);
+    return NextResponse.json(
+      { error: "Грешка при зареждане." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const {
+      firstName,
+      middleName,
+      lastName,
+      nickname,
+      email,
+      gender,
+      startDate,
+      promotionCount,
+      password,
+    } = body;
+
+    if (!password?.trim()) {
+      return NextResponse.json(
+        { error: "Паролата е задължителна." },
+        { status: 400 }
+      );
+    }
+
+    const croupier = await prisma.croupier.create({
+      data: {
+        firstName,
+        middleName,
+        lastName,
+        nickname,
+        email,
+        gender,
+        startDate: startDate ? new Date(startDate) : null,
+        promotions: Math.min(10, Math.max(0, Number(promotionCount))),
+        passwordHash: await bcrypt.hash(password.trim(), 10),
+      },
+    });
+
+    return NextResponse.json({ croupier });
+  } catch (err) {
+    console.error("POST error:", err);
+    return NextResponse.json(
+      { error: "Грешка при създаване." },
+      { status: 500 }
+    );
+  }
 }
