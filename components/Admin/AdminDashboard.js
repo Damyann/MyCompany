@@ -1,8 +1,7 @@
 "use client";
-
 import { useState } from "react";
 import "./AdminDashboard.css";
-import Team from "./Tеam/Team";
+import Team from "./Team/Team";
 
 const NAV_ITEMS = [
   { id: "dashboard", label: "Dashboard", icon: "🏠" },
@@ -11,15 +10,15 @@ const NAV_ITEMS = [
   { id: "team", label: "Team", icon: "👥" },
   { id: "games", label: "Games", icon: "🎮" },
   { id: "reports", label: "Reports", icon: "📊" },
-  { id: "admin", label: "Admin", icon: "⚙️" },
+  { id: "admin", label: "Admin", icon: "⚙️" }
 ];
 
 export default function AdminDashboard() {
   const [active, setActive] = useState("dashboard");
-  const activeItem = NAV_ITEMS.find((item) => item.id === active);
+  const activeItem = NAV_ITEMS.find(i => i.id === active);
+
   return (
     <div className="admin-layout">
-      {/* Сайдбар */}
       <aside className="admin-sidebar">
         <div className="admin-logo-block">
           <div className="admin-logo-dot" />
@@ -30,7 +29,7 @@ export default function AdminDashboard() {
         </div>
 
         <nav className="admin-nav">
-          {NAV_ITEMS.map((item) => (
+          {NAV_ITEMS.map(item => (
             <button
               key={item.id}
               className={
@@ -51,7 +50,6 @@ export default function AdminDashboard() {
         </div>
       </aside>
 
-      {/* Главна част */}
       <main className="admin-main">
         <div className="admin-main-shell">
           <header className="admin-main-header">
@@ -70,9 +68,7 @@ export default function AdminDashboard() {
               </div>
             ) : (
               <div className="admin-placeholder-card">
-                <p className="admin-placeholder-title">
-                  Няма данни за показване
-                </p>
+                <p className="admin-placeholder-title">Няма данни за показване</p>
               </div>
             )}
           </section>
