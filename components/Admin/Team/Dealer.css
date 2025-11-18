@@ -1,74 +1,80 @@
+/* -------------------------------------- */
+/* 🌈 Root Variables */
+/* -------------------------------------- */
 :root{--bg:#020617;--panel:#0b1224;--soft:rgba(148,163,184,.5);--txt:#f9fafb;--muted:#9ca3af;--blue:#6366f1;--green:#22c55e;--red:#ef4444}
 
+/* -------------------------------------- */
+/* 📄 Page Layout */
+/* -------------------------------------- */
 .admin-dealer-wrapper{display:flex;flex-direction:column;gap:1rem;color:var(--txt)}
-.admin-dealer-header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:flex-end;gap:.5rem 1rem}
+.admin-dealer-header-subrow{display:flex;justify-content:flex-start}
 .admin-dealer-sub{font-size:.85rem;color:var(--muted)}
-.admin-dealer-count{color:var(--green);font-weight:600}
 .admin-dealer-error{color:#fecaca}
+.admin-dealer-empty{border-radius:.7rem;padding:.8rem 1rem;background:radial-gradient(500px 350px at 0 0,rgba(148,163,184,.12),transparent),#071426;border:1px dashed rgba(148,163,184,.4);font-size:.85rem}
 
-.admin-dealer-empty{border-radius:.9rem;padding:1rem 1.25rem;background:radial-gradient(600px 400px at 0 0,rgba(148,163,184,.12),transparent),#071426;border:1px dashed rgba(148,163,184,.4);font-size:.9rem}
-
-.admin-dealer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.1rem}
-
-.admin-dealer-card{position:relative;border-radius:1.1rem;border:1px solid rgba(148,163,184,.35);background:radial-gradient(700px 500px at 0 0,rgba(56,189,248,.18),transparent),radial-gradient(700px 500px at 100% 120%,rgba(34,197,94,.14),transparent),#071426;padding:.9rem 1.05rem 1rem;display:flex;flex-direction:column;gap:.55rem;text-align:left;overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s}
-.admin-dealer-card:hover{transform:translateY(-3px);box-shadow:0 18px 36px rgba(15,23,42,.9);border-color:rgba(129,140,248,.9)}
-
-.admin-dealer-avatar{width:44px;height:44px;border-radius:999px;background:radial-gradient(circle at 25% 0,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;color:var(--txt);flex-shrink:0;box-shadow:0 0 0 2px #071426,0 12px 24px rgba(22,163,74,.6)}
-
-.admin-dealer-main{display:flex;flex-direction:column;gap:.15rem}
-.admin-dealer-name{font-size:.98rem;font-weight:600}
-.admin-dealer-nickname{font-size:.78rem;color:var(--muted)}
+/* -------------------------------------- */
+/* 🟩 Dealer Card Grid */
+/* -------------------------------------- */
+.admin-dealer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.admin-dealer-card{position:relative;border-radius:1rem;border:1px solid rgba(148,163,184,.32);background:linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.02)),#0b1224;padding:.75rem .9rem .85rem;display:flex;flex-direction:column;gap:.4rem;overflow:hidden;transition:.18s;box-shadow:0 8px 18px rgba(0,0,0,.35)}
+.admin-dealer-card:hover{transform:translateY(-3px);box-shadow:0 16px 32px rgba(0,0,0,.55);border-color:rgba(129,140,248,.75)}
+.admin-dealer-card-top{display:flex;align-items:center;gap:.7rem}
+.admin-dealer-avatar{width:40px;height:40px;border-radius:999px;background:radial-gradient(circle at 25% 0,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:var(--txt);box-shadow:0 0 0 2px #071426,0 10px 20px rgba(22,163,74,.5)}
+.admin-dealer-main{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:.1rem}
+.admin-dealer-name{font-size:.9rem;font-weight:600}
+.admin-dealer-nickname{font-size:.72rem;color:var(--muted)}
 .admin-dealer-nickname strong{color:var(--txt)}
-.admin-dealer-meta{margin-top:.15rem;display:flex;flex-direction:column;gap:.1rem;font-size:.8rem;color:var(--muted)}
+.admin-dealer-meta{margin-top:.1rem;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:.05rem;font-size:.75rem;color:var(--muted)}
 
-.admin-dealer-modal-backdrop{position:fixed;inset:0;background:radial-gradient(1200px 800px at 10% -10%,rgba(37,99,235,.25),transparent),rgba(2,6,23,.9);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:1.25rem;z-index:60}
-.admin-dealer-modal{width:100%;max-width:760px;border-radius:1.25rem;border:1px solid rgba(148,163,184,.55);background:radial-gradient(1000px 700px at 0 0,rgba(56,189,248,.18),transparent),radial-gradient(900px 600px at 120% 0,rgba(34,197,94,.16),transparent),rgba(2,6,23,.98);box-shadow:0 28px 80px rgba(15,23,42,.98);padding:1.3rem 1.5rem 1.4rem;display:flex;flex-direction:column;gap:1rem}
+/* -------------------------------------- */
+/* 🪟 Modal Window */
+/* -------------------------------------- */
+.admin-dealer-modal-backdrop{position:fixed;inset:0;background:radial-gradient(1000px 650px at 10% -10%,rgba(37,99,235,.22),transparent),rgba(2,6,23,.94);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:1.1rem;z-index:60}
+.admin-dealer-modal{width:100%;max-width:720px;border-radius:1.15rem;border:1px solid rgba(148,163,184,.45);background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.02)),rgba(2,6,23,.96);box-shadow:0 20px 65px rgba(0,0,0,.8);padding:1.2rem 1.4rem 1.3rem;display:flex;flex-direction:column;gap:.9rem}
+.admin-dealer-modal-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:.7rem;border-bottom:1px solid rgba(148,163,184,.35);gap:.75rem}
+.admin-dealer-modal-main{display:flex;align-items:center;gap:.7rem}
+.admin-dealer-modal-avatar{width:42px;height:42px;border-radius:999px;background:radial-gradient(circle at 25% 0,#818cf8,#4f46e5);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:var(--txt);box-shadow:0 0 0 2px var(--bg),0 14px 28px rgba(79,70,229,.7)}
+.admin-dealer-modal-title{font-size:1rem;font-weight:600}
+.admin-dealer-modal-sub{font-size:.75rem;color:var(--muted)}
+.btn-modal-close{width:30px;height:30px;border-radius:999px;border:1px solid rgba(148,163,184,.35);background:rgba(15,23,42,.6);color:var(--txt);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;box-shadow:0 3px 11px rgba(0,0,0,.45)}
+.btn-modal-close:hover{background:rgba(99,102,241,.25);border-color:rgba(129,140,248,.7);transform:translateY(-2px) scale(1.05)}
+.btn-modal-close:active{transform:scale(.92)}
 
-.admin-dealer-modal-header{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding-bottom:.8rem;border-bottom:1px solid rgba(148,163,184,.4)}
-.admin-dealer-modal-main{display:flex;align-items:center;gap:.8rem}
-.admin-dealer-modal-avatar{width:46px;height:46px;border-radius:999px;background:radial-gradient(circle at 25% 0,#818cf8,#4f46e5);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.15rem;color:var(--txt);box-shadow:0 0 0 2px var(--bg),0 16px 32px rgba(79,70,229,.8)}
-.admin-dealer-modal-title{font-size:1.05rem;font-weight:600}
-.admin-dealer-modal-sub{font-size:.8rem;color:var(--muted)}
+/* -------------------------------------- */
+/* 📝 Modal Form */
+/* -------------------------------------- */
+.admin-dealer-modal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.65rem .85rem}
+.admin-dealer-modal-grid>div{display:flex;flex-direction:column;gap:.18rem}
+.admin-dealer-modal-grid label{font-size:.75rem;color:var(--muted)}
+.admin-dealer-modal-grid input,.admin-dealer-modal-grid select{border-radius:.65rem;border:1px solid rgba(148,163,184,.45);background:rgba(2,6,23,.92);padding:.45rem .6rem;color:var(--txt);font-size:.82rem;transition:.15s}
+.admin-dealer-modal-grid input:focus,.admin-dealer-modal-grid select:focus{border-color:var(--blue);box-shadow:0 0 0 1px rgba(99,102,241,.7)}
+.admin-dealer-modal-actions{display:flex;justify-content:center;align-items:center;gap:.8rem;margin-top:1rem}
+.btn-save-modal{padding:.5rem 1.2rem;border-radius:999px;font-size:.85rem;font-weight:600;border:none;color:#fff;background:linear-gradient(135deg,var(--blue),var(--green));cursor:pointer;box-shadow:0 12px 26px rgba(37,99,235,.6);transition:.15s}
+.btn-save-modal:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 18px 36px rgba(37,99,235,.75)}
+.btn-save-modal:disabled{opacity:.6;cursor:default;transform:none;box-shadow:none}
+.btn-delete-modal{padding:.5rem 1.2rem;border-radius:999px;font-size:.85rem;font-weight:600;border:1px solid rgba(248,113,113,.7);background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;cursor:pointer;box-shadow:0 14px 28px rgba(239,68,68,.55);transition:.15s}
+.btn-delete-modal:hover{transform:translateY(-2px);filter:brightness(1.1);box-shadow:0 20px 42px rgba(239,68,68,.75)}
 
-.btn-modal-close{width:32px;height:32px;border-radius:999px;border:1px solid rgba(148,163,184,.4);background:rgba(15,23,42,.75);color:var(--txt);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;font-weight:600;transition:background .15s,transform .18s,box-shadow .18s,border-color .18s;backdrop-filter:blur(6px);box-shadow:0 4px 14px rgba(0,0,0,.5)}
-.btn-modal-close:hover{background:rgba(99,102,241,.25);border-color:rgba(129,140,248,.85);transform:translateY(-2px) scale(1.05);box-shadow:0 0 0 2px rgba(129,140,248,.6),0 12px 24px rgba(99,102,241,.55)}
-.btn-modal-close:active{transform:scale(.92);background:rgba(99,102,241,.35)}
-
-.admin-dealer-modal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.75rem 1rem}
-.admin-dealer-modal-grid>div{display:flex;flex-direction:column;gap:.25rem}
-.admin-dealer-modal-grid label{font-size:.8rem;color:var(--muted)}
-.admin-dealer-modal-grid input,.admin-dealer-modal-grid select{border-radius:.7rem;border:1px solid rgba(148,163,184,.55);background:rgba(2,6,23,.95);padding:.48rem .65rem;font-size:.85rem;color:var(--txt);outline:none;transition:border-color .15s,box-shadow .15s,background .15s}
-.admin-dealer-modal-grid input:focus,.admin-dealer-modal-grid select:focus{border-color:var(--blue);box-shadow:0 0 0 1px rgba(99,102,241,.8);background:#020617}
-
-.admin-dealer-modal-error{border-radius:.65rem;padding:.55rem .75rem;font-size:.8rem;background:rgba(220,38,38,.14);border:1px solid rgba(248,113,113,.7);color:#fecaca}
-.admin-dealer-modal-success{border-radius:.65rem;padding:.55rem .75rem;font-size:.8rem;background:rgba(22,163,74,.14);border:1px solid rgba(74,222,128,.7);color:#bbf7d0}
-
-.btn-save{border-radius:999px;padding:.48rem 1.15rem;font-size:.85rem;font-weight:500;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.3rem;background:linear-gradient(135deg,var(--blue),var(--green));color:#fff;box-shadow:0 14px 30px rgba(37,99,235,.6);transition:transform .15s,box-shadow .15s,filter .15s}
-.btn-save:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 20px 40px rgba(37,99,235,.75)}
-.btn-save:disabled{opacity:.6;cursor:default;transform:none;box-shadow:none}
-
-.btn-close{border-radius:999px;padding:.48rem 1.15rem;font-size:.85rem;font-weight:500;border:1px solid rgba(148,163,184,.55);background:rgba(15,23,42,.55);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,box-shadow .15s,transform .15s}
-.btn-close:hover{background:rgba(148,163,184,.25);transform:translateY(-2px);box-shadow:0 0 0 1px rgba(148,163,184,.6)}
-
-.btn-delete{border-radius:999px;padding:.48rem 1.15rem;font-size:.85rem;font-weight:500;border:1px solid rgba(248,113,113,.7);cursor:pointer;color:#fff;background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 16px 32px rgba(239,68,68,.55);transition:transform .15s,box-shadow .15s,filter .15s}
-.btn-delete:hover{transform:translateY(-2px);filter:brightness(1.1);box-shadow:0 22px 46px rgba(239,68,68,.75)}
-.btn-delete:active{transform:scale(.96);filter:brightness(.9)}
-
-.btn-add{padding:.55rem 1.35rem;border-radius:999px;background:linear-gradient(135deg,#6366f1,#22c55e);color:#fff;font-size:.9rem;font-weight:600;display:inline-flex;align-items:center;gap:.45rem;border:1px solid rgba(148,163,184,.5);box-shadow:0 12px 28px rgba(99,102,241,.45);cursor:pointer;transition:transform .18s,box-shadow .18s,filter .18s}
-.btn-add:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 18px 40px rgba(99,102,241,.6);filter:brightness(1.08)}
-
-.confirm-delete-box{margin-top:.8rem;border-radius:.85rem;padding:.9rem 1rem;background:rgba(220,38,38,.1);border:1px solid rgba(248,113,113,.5);text-align:center;animation:fadeIn .2s ease}
-.confirm-actions{display:flex;gap:.6rem;justify-content:center;margin-top:.6rem}
-
-.btn-confirm-yes{padding:.45rem 1rem;border-radius:999px;background:#ef4444;color:#fff;border:none;cursor:pointer;font-size:.85rem;font-weight:600;transition:filter .15s,transform .15s}
-.btn-confirm-yes:hover{filter:brightness(1.1);transform:translateY(-1px)}
-
-.btn-confirm-no{padding:.45rem 1rem;border-radius:999px;background:rgba(148,163,184,.2);color:var(--txt);border:1px solid rgba(148,163,184,.5);cursor:pointer;font-size:.85rem;transition:background .15s,transform .15s}
-.btn-confirm-no:hover{background:rgba(148,163,184,.3);transform:translateY(-1px)}
-
-.toast{position:fixed;right:20px;bottom:20px;padding:.7rem 1.1rem;border-radius:.85rem;font-size:.85rem;backdrop-filter:blur(8px);animation:toastIn .3s ease;z-index:200}
-.toast.success{background:rgba(34,197,94,.2);border:1px solid rgba(34,197,94,.6);color:#bbf7d0}
-.toast.error{background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.6);color:#fecaca}
-
-@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+/* -------------------------------------- */
+/* ❌ Delete Confirmation */
+/* -------------------------------------- */
+.confirm-delete-box{margin-top:.7rem;border-radius:.75rem;padding:.8rem .95rem;background:rgba(220,38,38,.1);border:1px solid rgba(248,113,113,.45);text-align:center;animation:fadeIn .2s}
+.confirm-delete-row{display:flex;align-items:center;gap:.5rem;margin-top:.5rem}
+.confirm-delete-input{flex:1;padding:.45rem .7rem;border-radius:.65rem;border:1px solid rgba(148,163,184,.45);background:rgba(2,6,23,.9);color:var(--txt);font-size:.85rem}
+.confirm-delete-btn{padding:.45rem .8rem;border-radius:.65rem;background:#ef4444;color:#fff;border:none;cursor:pointer;font-size:1rem;transition:.15s}
+.confirm-warn{margin-top:.4rem;font-size:.75rem;color:#fda4af}
 @keyframes fadeIn{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
+
+/* -------------------------------------- */
+/* 🔔 Notification Badge */
+/* -------------------------------------- */
+.notify-chip{padding:.35rem .75rem;border-radius:.65rem;font-size:.75rem;font-weight:500;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.12);animation:fadeIn .25s;white-space:nowrap;box-shadow:0 4px 18px rgba(0,0,0,.45)}
+.notify-chip.success{background:rgba(34,197,94,.15);border-color:rgba(74,222,128,.35);color:#bbf7d0}
+.notify-chip.error{background:rgba(239,68,68,.15);border-color:rgba(248,113,113,.35);color:#fecaca}
+
+/* -------------------------------------- */
+/* ➕ Add Dealer Button */
+/* -------------------------------------- */
+.btn-add{padding:.55rem 1.4rem;border-radius:999px;font-size:.9rem;font-weight:600;color:#fff;background:linear-gradient(135deg,#6366f1 0%,#4f46e5 45%,#312e81 100%);border:1px solid rgba(129,140,248,.45);box-shadow:0 8px 22px rgba(99,102,241,.35);cursor:pointer;transition:.22s;letter-spacing:.3px}
+.btn-add:hover{transform:translateY(-2px);filter:brightness(1.15);box-shadow:0 14px 32px rgba(99,102,241,.55),0 0 18px rgba(129,140,248,.45);border-color:rgba(129,140,248,.75)}
+.btn-add:active{transform:scale(.94);box-shadow:0 6px 14px rgba(99,102,241,.3)}
