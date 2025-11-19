@@ -1,29 +1,17 @@
-// -----------------------------
-// Prisma Client Generator
-// -----------------------------
 generator client {
   provider = "prisma-client-js"
 }
 
-// -----------------------------
-// Database Connection (PostgreSQL)
-// -----------------------------
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// -----------------------------
-// Пол (мъж / жена)
-// -----------------------------
 enum Gender {
   MALE
   FEMALE
 }
 
-// -----------------------------
-// Крупиета
-// -----------------------------
 model Croupier {
   id           Int       @id @default(autoincrement())
   firstName    String
@@ -35,25 +23,19 @@ model Croupier {
   startDate    DateTime
   promotions   Int       @default(0)
   passwordHash String
-  games        Game[]    // свързани игри (many-to-many)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  games        Game[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
-// -----------------------------
-// Админи
-// -----------------------------
 model Admin {
-  id           Int      @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   name         String
   passwordHash String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
-// -----------------------------
-// Питбосове
-// -----------------------------
 model Pitboss {
   id           Int       @id @default(autoincrement())
   firstName    String
@@ -63,13 +45,10 @@ model Pitboss {
   gender       Gender
   startDate    DateTime
   promotions   Int       @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
-// -----------------------------
-// QA (Контрол на качеството)
-// -----------------------------
 model QA {
   id           Int       @id @default(autoincrement())
   firstName    String
@@ -79,13 +58,10 @@ model QA {
   gender       Gender
   startDate    DateTime
   promotions   Int       @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
-// -----------------------------
-// Training (Обучители)
-// -----------------------------
 model Training {
   id           Int       @id @default(autoincrement())
   firstName    String
@@ -95,23 +71,19 @@ model Training {
   gender       Gender
   startDate    DateTime
   promotions   Int       @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
-// -----------------------------
-// Игри (добавят се от админ менюто)
-// -----------------------------
 model Game {
   id        Int         @id @default(autoincrement())
   name      String
-  croupiers Croupier[]  // many-to-many към Крупиета
+  croupiers Croupier[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Settings {
--  id         Int      @id @default(1)
-+  id         Int      @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   lastUpdate DateTime
 }
