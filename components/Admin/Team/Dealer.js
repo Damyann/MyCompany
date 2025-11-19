@@ -1,4 +1,4 @@
-"use client";import{useEffect,useState}from"react";import { useDealers } from "@/app/contexts/Contexts";import"./Dealer.css";
+"use client";import{useEffect,useState}from"react";import{useDealers}from"@/app/contexts/Contexts";import"./Dealer.css";
 
 const P=Array.from({length:11},(_,i)=>i),cl=v=>Math.min(10,Math.max(0,Number(v)||0)),empty={id:null,firstName:"",middleName:"",lastName:"",nickname:"",email:"",gender:"",startDate:"",promotionCount:0,password:""};
 
@@ -8,7 +8,7 @@ const[loading,setLoading]=useState(false),[listError,setListError]=useState(""),
 
 useEffect(()=>{if(!dealers.length)loadDealers();},[]);
 
-useEffect(()=>{const t=setInterval(async()=>{const r=await fetch("/api/Admin/Dealer/Changes");if(!r.ok)return;const d=await r.json();if(!d.lastUpdate)return;if(lastUpdate&&d.lastUpdate!==lastUpdate)loadDealers();setLastUpdate(d.lastUpdate)},5000);return()=>clearInterval(t)},[lastUpdate]);
+useEffect(()=>{const t=setInterval(async()=>{const r=await fetch("/api/Admin/Changes");if(!r.ok)return;const d=await r.json();if(!d.lastUpdate)return;if(lastUpdate&&d.lastUpdate!==lastUpdate)loadDealers();setLastUpdate(d.lastUpdate)},5000);return()=>clearInterval(t)},[lastUpdate]);
 
 const note=(m,t="success")=>{setNotify({msg:m,type:t});setTimeout(()=>setNotify(null),10000)};
 const openEdit=d=>setForm({...d,startDate:d.startDate?new Date(d.startDate).toISOString().slice(0,10):"",promotionCount:cl(d.promotions??0),password:""});
@@ -16,9 +16,7 @@ const openAdd=()=>setForm({...empty});
 const close=()=>{setForm(null);setSaving(false);setConfirmDelete(false);setConfirmNickname("");setNotify(null)};
 const ch=f=>e=>setForm(p=>({...p,[f]:f==="promotionCount"?cl(e.target.value):e.target.value}));
 
-const save=async e=>{
-e.preventDefault();if(!form)return;
-try{
+const save=async e=>{e.preventDefault();if(!form)return;try{
 setSaving(true);
 const p={id:form.id,firstName:form.firstName,middleName:form.middleName,lastName:form.lastName,nickname:form.nickname,email:form.email,gender:form.gender,startDate:form.startDate?new Date(form.startDate).toISOString():null,promotionCount:cl(form.promotionCount)};
 if(form.password.trim())p.password=form.password.trim();
@@ -39,7 +37,7 @@ if(!r.ok)throw new Error();
 setDealers(x=>x.filter(z=>z.id!==form.id));
 note("Крупието беше изтрито успешно");close();
 }catch{note("Крупието не беше изтрито","error")}};
-  
+
 return(<div className="admin-dealer-wrapper">
 
 <div className="admin-dealer-header-subrow"><button className="btn-add" onClick={openAdd}>Добави дилър</button></div>
