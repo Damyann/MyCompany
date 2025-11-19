@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { updateTimestamp } from "@/lib/UpdateTimestamp";
 
 const prisma=new PrismaClient();
