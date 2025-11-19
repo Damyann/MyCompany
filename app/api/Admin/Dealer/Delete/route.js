@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { updateTimestamp } from "@/lib/UpdateTimestamp";
 
 const prisma=new PrismaClient();
 
@@ -11,6 +12,8 @@ export async function DELETE(request){
     if(!id)return NextResponse.json({error:"Няма ID."},{status:400});
 
     await prisma.croupier.delete({where:{id:Number(id)}});
+
+    await updateTimestamp(); // ★ добавено
 
     return NextResponse.json({success:true});
   }catch(err){

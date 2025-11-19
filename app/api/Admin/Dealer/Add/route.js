@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { updateTimestamp } from "@/lib/UpdateTimestamp";
 
 const prisma=new PrismaClient();
 
@@ -24,6 +25,8 @@ export async function POST(request){
         passwordHash:await bcrypt.hash(password.trim(),10)
       }
     });
+
+    await updateTimestamp(); // ★ добавено
 
     return NextResponse.json({croupier});
   }catch(err){
