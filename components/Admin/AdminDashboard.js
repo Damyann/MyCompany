@@ -1,19 +1,22 @@
-"use client";import{useState,useRef,useEffect}from"react";import"./AdminDashboard.css";import Team from"./Team/Dealer";
+"use client";import{useState,useRef,useEffect}from"react";import"./AdminDashboard.css";import Dealer from"./Team/Dealer";
 
 const NAV_ITEMS=[{id:"dashboard",label:"Dashboard",icon:"🏠"},{id:"requests",label:"Requests",icon:"📥"},{id:"calendar",label:"Calendar",icon:"📅"},{id:"team",label:"Team",icon:"👥"},{id:"games",label:"Games",icon:"🎮"},{id:"reports",label:"Reports",icon:"📊"},{id:"admin",label:"Admin",icon:"⚙️"}];
 const TEAM_TABS=["Dealer","Pitboss","QA","Training"];
 
 export default function AdminDashboard(){
-const[active,setActive]=useState("dashboard");
-const[teamTab,setTeamTab]=useState("Dealer");
-const tabRefs=useRef([]);const[indicatorStyle,setIndicatorStyle]=useState({});
-const[dealers,setDealers]=useState([]);const[loadingDealers,setLoadingDealers]=useState(true);
+const[active,setActive]=useState("dashboard"),[teamTab,setTeamTab]=useState("Dealer"),tabRefs=useRef([]),[indicatorStyle,setIndicatorStyle]=useState({});
+const[dealers,setDealers]=useState([]),[loadingDealers,setLoadingDealers]=useState(true);
 
-useEffect(()=>{(async()=>{try{const r=await fetch("/api/Admin/Dealer");if(r.ok){const d=await r.json();setDealers(d.croupiers||[]);}}catch(e){console.log("Dealer load error",e);}finally{setLoadingDealers(false);} })();},[]);
+useEffect(()=>{(async()=>{try{
+ const r=await fetch("/api/Admin/Dealer/List");
+ if(r.ok){const d=await r.json();setDealers(d.croupiers||[]);}
+}finally{setLoadingDealers(false);} })();
+},[]);
 
-useEffect(()=>{if(active!=="team")return;const el=tabRefs.current[TEAM_TABS.indexOf(teamTab)];if(el){setIndicatorStyle({width:el.offsetWidth,left:el.offsetLeft});}},[teamTab,active]);
+useEffect(()=>{if(active!=="team")return;const el=tabRefs.current[TEAM_TABS.indexOf(teamTab)];if(el)setIndicatorStyle({width:el.offsetWidth,left:el.offsetLeft});},[teamTab,active]);
 
 return(<div className="admin-layout">
+
 <aside className="admin-sidebar">
 <div className="admin-logo-block"><div className="admin-logo-dot"/><div className="admin-logo-text"><span className="admin-logo-title">Control Panel</span><span className="admin-logo-sub">Casino Staff</span></div></div>
 <nav className="admin-nav">{NAV_ITEMS.map(i=>(<button key={i.id} className={"admin-nav-item"+(i.id===active?" admin-nav-item-active":"")} onClick={()=>setActive(i.id)}><span className="admin-nav-icon">{i.icon}</span><span className="admin-nav-label">{i.label}</span></button>))}</nav>
@@ -31,7 +34,7 @@ return(<div className="admin-layout">
 {active!=="team"
 ?(<div className="admin-placeholder-card"><p className="admin-placeholder-title">Няма данни за показване</p></div>)
 :teamTab==="Dealer"
-?(<Team dealers={dealers} loading={loadingDealers}/>)
+?(<Dealer dealers={dealers} loading={loadingDealers} setDealers={setDealers}/>)
 :(<div className="admin-placeholder-card"><p className="admin-placeholder-title">Няма съдържание</p></div>)}
 </section>
 

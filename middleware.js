@@ -4,16 +4,14 @@ import { jwtVerify } from "jose";
 async function verifyToken(token) {
   try {
     const secret = process.env.JWT_SECRET;
-    if (!secret) {
-      throw new Error("Missing JWT_SECRET");
-    }
+    if (!secret) throw new Error("Missing JWT_SECRET");
 
     const { payload } = await jwtVerify(
       token,
       new TextEncoder().encode(secret)
     );
 
-    return payload; // { userId, role, ... }
+    return payload;
   } catch (err) {
     return null;
   }
@@ -23,26 +21,14 @@ export async function middleware(request) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("auth_token")?.value || null;
 
-  // 1) Оставяме login/logout API-тата отворени
-  if (
-    pathname.startsWith("/api/login") ||
-    pathname.startsWith("/api/logout")
-  ) {
+  if (pathname.startsWith("/api/login") || pathname.startsWith("/api/logout"))
     return NextResponse.next();
-  }
 
-  // 2) За всички други защитени пътища ИЗИСКВАМЕ токен
-  if (!token) {
-    const loginUrl = new URL("/", request.url);
-    return NextResponse.redirect(loginUrl);
-  }
+  if (!token) return NextResponse.redirect(new URL("/", request.url));
 
   const payload = await verifyToken(token);
-
-  if (!payload || !payload.role) {
-    const loginUrl = new URL("/", request.url);
-    return NextResponse.redirect(loginUrl);
-  }
+  if (!payload?.role)
+    return NextResponse.redirect(new URL("/", request.url));
 
   const role = payload.role;
 
@@ -51,27 +37,15 @@ export async function middleware(request) {
   const isCroupierPath =
     pathname.startsWith("/croupier") || pathname.startsWith("/api/croupier");
 
-  // 3) Admin страници + admin API-та -> само с role = admin
-  if (isAdminPath && role !== "admin") {
-    const loginUrl = new URL("/", request.url);
-    return NextResponse.redirect(loginUrl);
-  }
+  if (isAdminPath && role !== "admin")
+    return NextResponse.redirect(new URL("/", request.url));
 
-  // 4) Croupier страници + croupier API-та -> само с role = croupier
-  if (isCroupierPath && role !== "croupier") {
-    const loginUrl = new URL("/", request.url);
-    return NextResponse.redirect(loginUrl);
-  }
+  if (isCroupierPath && role !== "croupier")
+    return NextResponse.redirect(new URL("/", request.url));
 
-  // 5) Всичко е ок – пускаме заявката
   return NextResponse.next();
 }
 
-// Казваме на Next.js кои пътища са защитени от middleware
 export const config = {
-  matcher: [
-    "/admin/:path*",
-    "/croupier/:path*",
-    "/api/:path*", // всички API-та минават оттук
-  ],
+  matcher: ["/admin/:path*", "/croupier/:path*", "/api/:path*"],
 };

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { signAuthToken } from "../../../lib/auth";
+import { signAuthToken } from "@/lib/auth";
 
 const prisma = new PrismaClient();
 
@@ -16,7 +16,7 @@ export async function POST(request) {
   }
 
   try {
-    // 1) Първо търсим дали е админ (логин с name)
+    // 1) Опитваме се да логнем ADMIN
     const admin = await prisma.admin.findFirst({
       where: { name: nickname },
     });
@@ -30,7 +30,11 @@ export async function POST(request) {
         );
       }
 
-      // Създаваме JWT токен за админ
+      // 🔥 ТУК ТЕГЛИМ ВСИЧКИ ДИЛЪРИ СЛЕД УСПЕШЕН ЛОГИН
+      const allDealers = await prisma.croupier.findMany({
+        orderBy: { id: "asc" }
+      });
+
       const token = await signAuthToken({
         userId: admin.id,
         role: "admin",
@@ -40,6 +44,7 @@ export async function POST(request) {
       const res = NextResponse.json({
         role: "admin",
         name: admin.name,
+        dealers: allDealers   // <-- ВРЪЩАМЕ ГИ КЪМ КЛИЕНТА !!!
       });
 
       res.cookies.set("auth_token", token, {
@@ -47,13 +52,13 @@ export async function POST(request) {
         secure: true,
         sameSite: "lax",
         path: "/",
-        maxAge: 60 * 60 * 8, // 8 часа
+        maxAge: 60 * 60 * 8,
       });
 
       return res;
     }
 
-    // 2) Ако не е админ, търсим като крупие (nickname)
+    // 2) Опитваме логин за Крупие
     const croupier = await prisma.croupier.findFirst({
       where: { nickname },
     });
@@ -67,7 +72,6 @@ export async function POST(request) {
         );
       }
 
-      // Създаваме JWT токен за крупие
       const token = await signAuthToken({
         userId: croupier.id,
         role: "croupier",
@@ -90,7 +94,6 @@ export async function POST(request) {
       return res;
     }
 
-    // Няма такъв човек
     return NextResponse.json(
       { error: "Няма потребител с такъв псевдоним." },
       { status: 404 }
