@@ -1,15 +1,15 @@
 /* === Глобални ROOT променливи за цветове, панели и сенки === */
 :root{--bg:#020617;--panel:#030014;--panel-soft:#05001f;--txt:#fdf4ff;--muted:#a5b4fc;--blue:#8b5cf6;--green:#22d3ee;--red:#fb7185;--border:rgba(129,140,248,.6);--shadow:0 18px 45px rgba(15,23,42,.9)}
 
-/* === Основна обвивка и горни помощни класове === */
+/* === Основна обвивка и горни помощни класове === /
 .dealer-wrapper,.admin-dealer-wrapper{display:flex;flex-direction:column;gap:1rem;color:var(--txt)}
-.admin-dealer-header-subrow{display:flex;justify-content:flex-start} /* ред с бутона ‘Добави’ */
-.admin-dealer-sub{font-size:.85rem;color:var(--muted)} /* помощен текст */
-.admin-dealer-error{color:#fecaca} /* грешки */
-.admin-dealer-empty{border-radius:.9rem;padding:1rem 1.2rem;background:radial-gradient(600px 380px at 0 0,rgba(139,92,246,.25),transparent),#020012;border:1px dashed rgba(148,163,184,.5);font-size:.85rem} /* няма дилъри */
+.admin-dealer-header-subrow{display:flex;justify-content:flex-start} / ред с бутона ‘Добави’ /
+.admin-dealer-sub{font-size:.85rem;color:var(--muted)} / помощен текст /
+.admin-dealer-error{color:#fecaca} / грешки /
+.admin-dealer-empty{border-radius:.9rem;padding:1rem 1.2rem;background:radial-gradient(600px 380px at 0 0,rgba(139,92,246,.25),transparent),#020012;border:1px dashed rgba(148,163,184,.5);font-size:.85rem} / няма дилъри */
 
 /* === Грид с дилъри === */
-.admin-dealer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.2rem;align-items:stretch}
+.admin-dealer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.2rem;align-items:stretch;margin-top:20px}
 @media(max-width:1100px){.admin-dealer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){.admin-dealer-grid{grid-template-columns:1fr}}
 
@@ -47,14 +47,9 @@ display:flex;align-items:center;justify-content:center;font-size:1rem;font-weigh
 .admin-dealer-meta span{padding:.15rem .45rem;border-radius:999px;background:rgba(15,23,42,.9);border:1px solid rgba(148,163,184,.35)}
 
 /* === Модален фон === */
-.admin-dealer-modal-backdrop{position:fixed;inset:0;top:0!important;left:0!important;background:radial-gradient(950px 620px at 0 0,rgba(139,92,246,.45),transparent),radial-gradient(950px 620px at 100% 100%,rgba(14,165,233,.4),transparent),rgba(2,6,23,.96);backdrop-filter:blur(18px);display:flex;align-items:flex-start;justify-content:center;padding:1.4rem;z-index:60;transform:none!important}
+.admin-dealer-modal-backdrop{position:fixed;inset:0;top:0!important;left:0!important;background:radial-gradient(950px 620px at 0 0,rgba(139,92,246,.45),transparent),radial-gradient(950px 620px at 100% 100%,rgba(14,165,233,.4),transparent),rgba(2,6,23,.96);backdrop-filter:blur(18px);display:block;padding:1.4rem;z-index:60;transform:none!important}
 
-
-/* === Контейнер на модала === */
-.dealer-flex-wrap{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-display:flex;flex-direction:row;align-items:flex-start;justify-content:center;gap:1.4rem;
-width:100%;max-width:1120px;min-height:400px;max-height:80vh}
-
+.dealer-flex-wrap{position:absolute;top:30%;left:50%;transform:translate(-50%,0);display:flex;flex-direction:row;align-items:flex-start;justify-content:center;gap:5px;width:100%;max-width:1120px}
 
 /* === Модален панел === */
 .admin-dealer-modal{flex:0 0 560px;border-radius:1.2rem;border:1px solid var(--border);
@@ -92,7 +87,7 @@ background:rgba(15,23,42,.85);color:var(--txt);display:flex;align-items:center;j
 .admin-dealer-modal-grid input,.admin-dealer-modal-grid select{border-radius:.7rem;border:1px solid rgba(148,163,184,.55);background:rgba(15,23,42,.96);padding:.5rem .65rem;color:var(--txt);font-size:.84rem}
 
 /* === Бутоните под формата === */
-.admin-dealer-modal-actions{margin-top:auto;display:flex;justify-content:center;gap:.9rem}
+.admin-dealer-modal-actions{display:flex;justify-content:center;gap:.9rem;margin-top:.6rem}
 .btn-save-modal{padding:.55rem 1.5rem;border-radius:999px;font-size:.86rem;font-weight:600;background:linear-gradient(135deg,#22d3ee,#a855f7,#ec4899);color:#0b1120;border:none}
 .btn-delete-modal{padding:.55rem 1.3rem;border-radius:999px;font-size:.84rem;font-weight:600;border:1px solid rgba(248,113,113,.8);background:linear-gradient(135deg,#fb7185,#e11d48);color:#fef2f2}
 
@@ -108,7 +103,6 @@ background:rgba(15,23,42,.85);color:var(--txt);display:flex;align-items:center;j
 .notify-chip.success{background:rgba(45,212,191,.25);border-color:rgba(45,212,191,.7)}
 .notify-chip.error{background:rgba(248,113,113,.23);border-color:rgba(248,113,113,.75)}
 
-
 /* === Голям бутон за добавяне === */
 .btn-add{padding:.6rem 1.5rem;border-radius:999px;font-size:.9rem;font-weight:600;background:conic-gradient(from 210deg,#22d3ee,#a855f7,#ec4899,#22d3ee);color:#020617;border:1px solid rgba(129,140,248,.7);box-shadow:0 10px 28px rgba(30,64,175,.7)}
 
@@ -117,9 +111,8 @@ background:rgba(15,23,42,.85);color:var(--txt);display:flex;align-items:center;j
 background:radial-gradient(circle at 0 0,rgba(56,189,248,.25),transparent 55%),
 radial-gradient(circle at 100% 100%,rgba(236,72,153,.25),transparent 55%),
 linear-gradient(145deg,#020012,#020617);box-shadow:var(--shadow);
-padding:1rem .95rem;display:flex;flex-direction:column;gap:.7rem;opacity:0;transform:translateX(18px);
-pointer-events:none;transition:.25s;position:absolute;right:-280px;top:0}
-.dealer-side-panel.open{opacity:1;transform:translateX(0);pointer-events:auto;right:0}
+padding:1rem .95rem;display:flex;flex-direction:column;gap:.7rem;opacity:0;pointer-events:none;transition:.25s}
+.dealer-side-panel.open{opacity:1;pointer-events:auto}
 
 .dealer-side-title{font-size:.9rem;font-weight:600}
 .dealer-side-list{display:flex;flex-direction:column;gap:.45rem;overflow-y:auto;padding-right:.25rem}
@@ -133,4 +126,26 @@ pointer-events:none;transition:.25s;position:absolute;right:-280px;top:0}
 
 /* === Бутон настройки (⚙) === */
 .dealer-settings-btn{width:32px;height:32px;border-radius:.9rem;background:rgba(15,23,42,.95);border:1px solid rgba(148,163,184,.6);color:var(--txt);display:flex;align-items:center;justify-content:center;font-size:1rem;margin-left:auto!important}
+
+/* Заключена игра */
+.dealer-side-item.disabled{
+  opacity:.30!important;
+  pointer-events:none;
+}
+
+/* Катинарче */
+.dealer-lock{
+  width:20px;height:20px;
+  border-radius:.35rem;
+  background:rgba(30,41,59,.75);
+  border:2px solid rgba(120,120,120,.55);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;color:rgba(200,200,200,.75);
+}
+
+.dealer-lock::before{
+  content:"🔒";
+  transform:translateY(-1px);
+  font-size:.9rem;
+}
 
