@@ -74,7 +74,7 @@ return(<div className="dealer-wrapper">
 </div>
 </div>
 {notify && <div className={"notify-chip " + notify.type}>{notify.msg}</div>}
-<button className="settings-right" onClick={() => setShowPanel(!showPanel)}>⚙</button>
+<button className="dealer-settings-btn" onClick={() => setShowPanel(!showPanel)}>⚙</button>
 <button className="btn-modal-close" onClick={close}>✕</button>
 </div>
 

@@ -1,90 +1,136 @@
+/* === Глобални ROOT променливи за цветове, панели и сенки === */
 :root{--bg:#020617;--panel:#030014;--panel-soft:#05001f;--txt:#fdf4ff;--muted:#a5b4fc;--blue:#8b5cf6;--green:#22d3ee;--red:#fb7185;--border:rgba(129,140,248,.6);--shadow:0 18px 45px rgba(15,23,42,.9)}
 
+/* === Основна обвивка и горни помощни класове === */
 .dealer-wrapper,.admin-dealer-wrapper{display:flex;flex-direction:column;gap:1rem;color:var(--txt)}
-.admin-dealer-header-subrow{display:flex;justify-content:flex-start}
-.admin-dealer-sub{font-size:.85rem;color:var(--muted)}
-.admin-dealer-error{color:#fecaca}
-.admin-dealer-empty{border-radius:.9rem;padding:1rem 1.2rem;background:radial-gradient(600px 380px at 0 0,rgba(139,92,246,.25),transparent),#020012;border:1px dashed rgba(148,163,184,.5);font-size:.85rem}
+.admin-dealer-header-subrow{display:flex;justify-content:flex-start} /* ред с бутона ‘Добави’ */
+.admin-dealer-sub{font-size:.85rem;color:var(--muted)} /* помощен текст */
+.admin-dealer-error{color:#fecaca} /* грешки */
+.admin-dealer-empty{border-radius:.9rem;padding:1rem 1.2rem;background:radial-gradient(600px 380px at 0 0,rgba(139,92,246,.25),transparent),#020012;border:1px dashed rgba(148,163,184,.5);font-size:.85rem} /* няма дилъри */
 
+/* === Грид с дилъри === */
 .admin-dealer-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.2rem;align-items:stretch}
 @media(max-width:1100px){.admin-dealer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){.admin-dealer-grid{grid-template-columns:1fr}}
 
-.admin-dealer-card{position:relative;border-radius:1.1rem;border:1px solid rgba(148,163,184,.45);background:radial-gradient(circle at 0 0,rgba(236,72,153,.22),transparent 55%),radial-gradient(circle at 100% 100%,rgba(56,189,248,.18),transparent 55%),linear-gradient(145deg,rgba(15,23,42,.96),#020012);padding:.9rem 1rem .95rem;display:flex;flex-direction:column;gap:.55rem;overflow:hidden;transition:.18s;box-shadow:0 10px 26px rgba(0,0,0,.55)}
-.admin-dealer-card::before{content:"";position:absolute;inset:-1px;border-radius:inherit;border:1px solid transparent;background:linear-gradient(135deg,rgba(236,72,153,.7),rgba(56,189,248,.7)) border-box;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;opacity:0;transition:.2s}
+/* === Карта на дилър === */
+.admin-dealer-card{position:relative;border-radius:1.1rem;border:1px solid rgba(148,163,184,.45);
+background:radial-gradient(circle at 0 0,rgba(236,72,153,.22),transparent 55%),
+radial-gradient(circle at 100% 100%,rgba(56,189,248,.18),transparent 55%),
+linear-gradient(145deg,rgba(15,23,42,.96),#020012);
+padding:.9rem 1rem .95rem;display:flex;flex-direction:column;gap:.55rem;overflow:hidden;transition:.18s;box-shadow:0 10px 26px rgba(0,0,0,.55)}
+.admin-dealer-card::before{content:"";position:absolute;inset:-1px;border-radius:inherit;border:1px solid transparent;
+background:linear-gradient(135deg,rgba(236,72,153,.7),rgba(56,189,248,.7)) border-box;
+mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+mask-composite:exclude;opacity:0;transition:.2s}
 .admin-dealer-card:hover{transform:translateY(-4px) scale(1.01);box-shadow:0 20px 46px rgba(15,23,42,.95)}
 .admin-dealer-card:hover::before{opacity:1}
+
+/* === Карта – горна част с аватар и имена === */
 .admin-dealer-card-top{display:flex;align-items:center;gap:.8rem}
-.admin-dealer-avatar{width:42px;height:42px;border-radius:1.2rem;background:conic-gradient(from 210deg,#f97316,#ec4899,#22d3ee,#4f46e5,#f97316);padding:2px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px rgba(15,23,42,.9),0 12px 30px rgba(15,23,42,.95)}
-.admin-dealer-avatar::before{content:attr(data-letter);width:100%;height:100%;border-radius:inherit;background:radial-gradient(circle at 30% 0,#0f172a,#020617);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:var(--txt)}
+.admin-dealer-avatar{width:42px;height:42px;border-radius:1.2rem;
+background:conic-gradient(from 210deg,#f97316,#ec4899,#22d3ee,#4f46e5,#f97316);
+padding:2px;display:flex;align-items:center;justify-content:center;
+box-shadow:0 0 0 1px rgba(15,23,42,.9),0 12px 30px rgba(15,23,42,.95)}
+.admin-dealer-avatar::before{content:attr(data-letter);width:100%;height:100%;border-radius:inherit;
+background:radial-gradient(circle at 30% 0,#0f172a,#020617);
+display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:var(--txt)}
+
+/* === Имена и псевдоним === */
 .admin-dealer-main{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:.12rem}
-.admin-dealer-name{font-size:.92rem;font-weight:600;letter-spacing:.02em}
+.admin-dealer-name{font-size:.92rem;font-weight:600}
 .admin-dealer-nickname{font-size:.72rem;color:var(--muted)}
 .admin-dealer-nickname strong{color:#fee2ff}
+
+/* === Данни под картата (тагчета) === */
 .admin-dealer-meta{margin-top:.15rem;display:flex;flex-wrap:wrap;gap:.25rem .6rem;font-size:.72rem;color:var(--muted)}
 .admin-dealer-meta span{padding:.15rem .45rem;border-radius:999px;background:rgba(15,23,42,.9);border:1px solid rgba(148,163,184,.35)}
 
-.admin-dealer-modal-backdrop{position:fixed;inset:0;background:radial-gradient(950px 620px at 0 0,rgba(139,92,246,.45),transparent),radial-gradient(950px 620px at 100% 100%,rgba(14,165,233,.4),transparent),rgba(2,6,23,.96);backdrop-filter:blur(18px);display:flex;align-items:flex-start;justify-content:center;padding:1.4rem;z-index:60}
-.dealer-flex-wrap{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:row;align-items:flex-start;justify-content:center;gap:1.4rem;width:100%;max-width:1120px;min-height:400px;max-height:80vh}
+/* === Модален фон === */
+.admin-dealer-modal-backdrop{position:fixed;inset:0;top:0!important;left:0!important;background:radial-gradient(950px 620px at 0 0,rgba(139,92,246,.45),transparent),radial-gradient(950px 620px at 100% 100%,rgba(14,165,233,.4),transparent),rgba(2,6,23,.96);backdrop-filter:blur(18px);display:flex;align-items:flex-start;justify-content:center;padding:1.4rem;z-index:60;transform:none!important}
 
-.admin-dealer-modal{flex:0 0 560px;align-self:flex-start;align-items:flex-start;border-radius:1.2rem;border:1px solid var(--border);background:radial-gradient(circle at 0 0,rgba(236,72,153,.25),transparent 55%),radial-gradient(circle at 100% 100%,rgba(56,189,248,.2),transparent 55%),linear-gradient(145deg,var(--panel-soft),#020012);box-shadow:var(--shadow);padding:1.2rem 1.4rem 1.3rem;display:flex;flex-direction:column;gap:.9rem;overflow:hidden}
 
+/* === Контейнер на модала === */
+.dealer-flex-wrap{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+display:flex;flex-direction:row;align-items:flex-start;justify-content:center;gap:1.4rem;
+width:100%;max-width:1120px;min-height:400px;max-height:80vh}
+
+
+/* === Модален панел === */
+.admin-dealer-modal{flex:0 0 560px;border-radius:1.2rem;border:1px solid var(--border);
+background:radial-gradient(circle at 0 0,rgba(236,72,153,.25),transparent 55%),
+radial-gradient(circle at 100% 100%,rgba(56,189,248,.2),transparent 55%),
+linear-gradient(145deg,var(--panel-soft),#020012);
+box-shadow:var(--shadow);padding:1.2rem 1.4rem 1.3rem;display:flex;flex-direction:column;gap:.9rem;overflow:hidden}
+
+/* === Хедър в модала === */
 .admin-dealer-modal-header{display:flex;align-items:center;gap:.6rem;padding-bottom:.75rem;border-bottom:1px solid rgba(148,163,184,.4)}
 .admin-dealer-modal-main{display:flex;align-items:center;gap:.75rem}
-.admin-dealer-modal-avatar{width:44px;height:44px;border-radius:1.2rem;background:conic-gradient(from 220deg,#0ea5e9,#22d3ee,#a855f7,#ec4899,#0ea5e9);padding:2px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px rgba(15,23,42,.9),0 14px 32px rgba(15,23,42,.95)}
-.admin-dealer-modal-avatar span{width:100%;height:100%;border-radius:inherit;background:radial-gradient(circle at 30% 0,#020617,#020012);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:var(--txt)}
+.admin-dealer-modal-avatar{width:44px;height:44px;border-radius:1.2rem;
+background:conic-gradient(from 220deg,#0ea5e9,#22d3ee,#a855f7,#ec4899,#0ea5e9);
+padding:2px;display:flex;align-items:center;justify-content:center;
+box-shadow:0 0 0 1px rgba(15,23,42,.9),0 14px 32px rgba(15,23,42,.95)}
+.admin-dealer-modal-avatar span{width:100%;height:100%;border-radius:inherit;
+background:radial-gradient(circle at 30% 0,#020617,#020012);
+display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:var(--txt)}
 .admin-dealer-modal-title{font-size:1.02rem;font-weight:600}
 .admin-dealer-modal-sub{font-size:.76rem;color:var(--muted)}
-.btn-modal-close{width:30px;height:30px;border-radius:999px;border:1px solid rgba(148,163,184,.4);background:rgba(15,23,42,.85);color:var(--txt);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;box-shadow:0 3px 11px rgba(0,0,0,.55)}
-.btn-modal-close:hover{background:rgba(248,250,252,.08);border-color:rgba(244,244,245,.9);transform:translateY(-2px) scale(1.04)}
-.btn-modal-close:active{transform:scale(.9)}
 
+/* === Затваряне на модала === */
+.btn-modal-close{width:30px;height:30px;border-radius:999px;border:1px solid rgba(148,163,184,.4);
+background:rgba(15,23,42,.85);color:var(--txt);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
+
+/* === Форма в модала === */
 .admin-dealer-modal-form{display:flex;flex-direction:column;gap:.9rem;height:100%}
-.admin-dealer-modal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem .9rem;align-content:flex-start}
+
+/* === Грид с полета === */
+.admin-dealer-modal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem .9rem}
 @media(max-width:1024px){.admin-dealer-modal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){.admin-dealer-modal-grid{grid-template-columns:1fr}}
 .admin-dealer-modal-grid>div{display:flex;flex-direction:column;gap:.18rem}
 .admin-dealer-modal-grid label{font-size:.74rem;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
-.admin-dealer-modal-grid input,.admin-dealer-modal-grid select{border-radius:.7rem;border:1px solid rgba(148,163,184,.55);background:rgba(15,23,42,.96);padding:.5rem .65rem;color:var(--txt);font-size:.84rem;transition:.16s;outline:none}
-.admin-dealer-modal-grid input::placeholder{color:rgba(148,163,184,.65)}
-.admin-dealer-modal-grid input:focus,.admin-dealer-modal-grid select:focus{border-color:var(--blue);box-shadow:0 0 0 1px rgba(139,92,246,.9),0 0 22px rgba(129,140,248,.5)}
+.admin-dealer-modal-grid input,.admin-dealer-modal-grid select{border-radius:.7rem;border:1px solid rgba(148,163,184,.55);background:rgba(15,23,42,.96);padding:.5rem .65rem;color:var(--txt);font-size:.84rem}
 
-.admin-dealer-modal-actions{margin-top:auto;display:flex;justify-content:center;align-items:center;gap:.9rem}
-.btn-save-modal{padding:.55rem 1.5rem;border-radius:999px;font-size:.86rem;font-weight:600;border:none;color:#0b1120;background:linear-gradient(135deg,#22d3ee,#a855f7,#ec4899);cursor:pointer;box-shadow:0 14px 34px rgba(56,189,248,.6);transition:.16s}
-.btn-save-modal:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 20px 40px rgba(56,189,248,.85)}
-.btn-save-modal:disabled{opacity:.55;cursor:default;transform:none;box-shadow:none}
-.btn-delete-modal{padding:.55rem 1.3rem;border-radius:999px;font-size:.84rem;font-weight:600;border:1px solid rgba(248,113,113,.8);background:linear-gradient(135deg,#fb7185,#e11d48);color:#fef2f2;cursor:pointer;box-shadow:0 14px 32px rgba(248,113,113,.65);transition:.16s}
-.btn-delete-modal:hover{transform:translateY(-2px);filter:brightness(1.07);box-shadow:0 22px 44px rgba(248,113,113,.9)}
+/* === Бутоните под формата === */
+.admin-dealer-modal-actions{margin-top:auto;display:flex;justify-content:center;gap:.9rem}
+.btn-save-modal{padding:.55rem 1.5rem;border-radius:999px;font-size:.86rem;font-weight:600;background:linear-gradient(135deg,#22d3ee,#a855f7,#ec4899);color:#0b1120;border:none}
+.btn-delete-modal{padding:.55rem 1.3rem;border-radius:999px;font-size:.84rem;font-weight:600;border:1px solid rgba(248,113,113,.8);background:linear-gradient(135deg,#fb7185,#e11d48);color:#fef2f2}
 
-.confirm-delete-box{margin-top:.7rem;border-radius:.9rem;padding:.85rem 1rem;background:rgba(24,24,27,.82);border:1px solid rgba(248,113,113,.5);text-align:center;animation:fadeIn .2s;font-size:.8rem}
+/* === Потвърждение за изтриване === */
+.confirm-delete-box{margin-top:.7rem;border-radius:.9rem;padding:.85rem 1rem;background:rgba(24,24,27,.82);border:1px solid rgba(248,113,113,.5);text-align:center;font-size:.8rem}
 .confirm-delete-row{display:flex;align-items:center;gap:.55rem;margin-top:.55rem}
-.confirm-delete-input{flex:1;padding:.45rem .7rem;border-radius:.65rem;border:1px solid rgba(148,163,184,.6);background:rgba(15,23,42,.96);color:var(--txt);font-size:.84rem}
-.confirm-delete-btn{padding:.45rem .85rem;border-radius:.7rem;background:#fb7185;color:#fef2f2;border:none;cursor:pointer;font-size:1rem;transition:.16s}
-.confirm-delete-btn:disabled{opacity:.35;cursor:not-allowed}
+.confirm-delete-input{flex:1;padding:.45rem .7rem;border-radius:.65rem;border:1px solid rgba(148,163,184,.6);background:rgba(15,23,42,.96);color:var(--txt)}
+.confirm-delete-btn{padding:.45rem .85rem;border-radius:.7rem;background:#fb7185;color:#fef2f2;border:none;cursor:pointer}
 .confirm-warn{margin-top:.35rem;font-size:.76rem;color:#fecaca}
 
-.notify-chip{padding:.38rem .8rem;border-radius:.7rem;font-size:.76rem;font-weight:500;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.18);animation:fadeIn .25s;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.6)}
-.notify-chip.success{background:rgba(45,212,191,.25);border-color:rgba(45,212,191,.7);color:#ccfbf1}
-.notify-chip.error{background:rgba(248,113,113,.23);border-color:rgba(248,113,113,.75);color:#fee2e2}
+/* === Нотификации === */
+.notify-chip{padding:.38rem .8rem;border-radius:.7rem;font-size:.76rem;font-weight:500;backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.18);margin:0 auto!important;display:block!important;text-align:center}
+.notify-chip.success{background:rgba(45,212,191,.25);border-color:rgba(45,212,191,.7)}
+.notify-chip.error{background:rgba(248,113,113,.23);border-color:rgba(248,113,113,.75)}
 
-.btn-add{padding:.6rem 1.5rem;border-radius:999px;font-size:.9rem;font-weight:600;color:#020617;background:conic-gradient(from 210deg,#22d3ee,#a855f7,#ec4899,#22d3ee);border:1px solid rgba(129,140,248,.7);box-shadow:0 10px 28px rgba(30,64,175,.7);cursor:pointer;transition:.22s;letter-spacing:.05em;text-transform:uppercase}
-.btn-add:hover{transform:translateY(-2px);filter:brightness(1.1);box-shadow:0 18px 40px rgba(30,64,175,.95)}
-.btn-add:active{transform:scale(.94);box-shadow:0 8px 20px rgba(30,64,175,.7)}
 
-.dealer-side-panel{width:260px;min-width:260px;align-self:stretch;border-radius:1.2rem;border:1px solid rgba(148,163,184,.55);background:radial-gradient(circle at 0 0,rgba(56,189,248,.25),transparent 55%),radial-gradient(circle at 100% 100%,rgba(236,72,153,.25),transparent 55%),linear-gradient(145deg,#020012,#020617);box-shadow:var(--shadow);padding:1rem .95rem;display:flex;flex-direction:column;gap:.7rem;opacity:0;transform:translateX(18px);pointer-events:none;transition:.25s;position:absolute;right:-280px;top:0}
+/* === Голям бутон за добавяне === */
+.btn-add{padding:.6rem 1.5rem;border-radius:999px;font-size:.9rem;font-weight:600;background:conic-gradient(from 210deg,#22d3ee,#a855f7,#ec4899,#22d3ee);color:#020617;border:1px solid rgba(129,140,248,.7);box-shadow:0 10px 28px rgba(30,64,175,.7)}
+
+/* === Дясна странична панела === */
+.dealer-side-panel{width:260px;min-width:260px;align-self:stretch;border-radius:1.2rem;border:1px solid rgba(148,163,184,.55);
+background:radial-gradient(circle at 0 0,rgba(56,189,248,.25),transparent 55%),
+radial-gradient(circle at 100% 100%,rgba(236,72,153,.25),transparent 55%),
+linear-gradient(145deg,#020012,#020617);box-shadow:var(--shadow);
+padding:1rem .95rem;display:flex;flex-direction:column;gap:.7rem;opacity:0;transform:translateX(18px);
+pointer-events:none;transition:.25s;position:absolute;right:-280px;top:0}
 .dealer-side-panel.open{opacity:1;transform:translateX(0);pointer-events:auto;right:0}
-.dealer-side-title{font-size:.9rem;font-weight:600;margin-bottom:.1rem}
+
+.dealer-side-title{font-size:.9rem;font-weight:600}
 .dealer-side-list{display:flex;flex-direction:column;gap:.45rem;overflow-y:auto;padding-right:.25rem}
 
-.dealer-side-item{display:flex;align-items:center;gap:.65rem;padding:.35rem .4rem;border-radius:.6rem;font-size:.88rem;color:var(--txt);cursor:pointer;transition:.2s}
-.dealer-side-item:hover{background:rgba(255,255,255,.05)}
-.dealer-side-item input{appearance:none;-webkit-appearance:none;width:20px;height:20px;border-radius:.35rem;background:rgba(15,23,42,.8);border:2px solid rgba(139,92,246,.6);display:flex;align-items:center;justify-content:center;transition:.25s;cursor:pointer;position:relative}
-.dealer-side-item input:checked{background:linear-gradient(135deg,#8b5cf6,#a855f7);border-color:#c084fc;box-shadow:0 0 12px #a855f7aa}
+/* === Елемент в страничната панела === */
+.dealer-side-item{display:flex;align-items:center;gap:.65rem;padding:.35rem .4rem;border-radius:.6rem;font-size:.88rem;cursor:pointer}
+.dealer-side-item input{appearance:none;width:20px;height:20px;border-radius:.35rem;background:rgba(15,23,42,.8);border:2px solid rgba(139,92,246,.6);display:flex;align-items:center;justify-content:center}
+.dealer-side-item input:checked{background:linear-gradient(135deg,#8b5cf6,#a855f7);border-color:#c084fc}
 .dealer-side-item input:checked::after{content:"✓";color:#fff;font-size:.85rem;font-weight:700}
-.dealer-side-item span{font-size:.88rem;color:var(--txt);letter-spacing:.3px}
+.dealer-side-item span{font-size:.88rem;color:var(--txt)}
 
-.dealer-settings-btn{width:32px;height:32px;border-radius:.9rem;background:rgba(15,23,42,.95);border:1px solid rgba(148,163,184,.6);color:var(--txt);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:.16s;box-shadow:0 4px 12px rgba(0,0,0,.7);margin-left:auto}
-.dealer-settings-btn:hover{background:rgba(129,140,248,.25);border-color:rgba(43,43,44,.95);transform:translateY(-2px) scale(1.05)}
-.dealer-settings-btn:active{transform:scale(.9)}
+/* === Бутон настройки (⚙) === */
+.dealer-settings-btn{width:32px;height:32px;border-radius:.9rem;background:rgba(15,23,42,.95);border:1px solid rgba(148,163,184,.6);color:var(--txt);display:flex;align-items:center;justify-content:center;font-size:1rem;margin-left:auto!important}
 
-@keyframes fadeIn{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
