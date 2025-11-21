@@ -1,0 +1,52 @@
+:root{--bg:#020617;--panel:#0b1224;--soft:rgba(148,163,184,.5);--txt:#f9fafb;--muted:#9ca3af;--blue:#6366f1;--green:#22c55e;--red:#ef4444}
+
+/* PAGE */
+.game-wrap{display:flex;flex-direction:column;gap:1rem;color:var(--txt)}
+.game-top{display:flex;justify-content:flex-start}
+.game-empty{border-radius:.7rem;padding:.8rem 1rem;background:radial-gradient(500px 350px at 0 0,rgba(148,163,184,.12),transparent),#071426;border:1px dashed rgba(148,163,184,.4);font-size:.85rem}
+
+/* GRID */
+.game-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.game-card{position:relative;border-radius:1rem;border:1px solid rgba(148,163,184,.32);background:linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.02)),#0b1224;padding:.75rem .9rem .85rem;display:flex;flex-direction:column;gap:.5rem;overflow:hidden;transition:.18s;box-shadow:0 8px 18px rgba(0,0,0,.35)}
+.game-card:hover{transform:translateY(-3px);box-shadow:0 16px 32px rgba(0,0,0,.55);border-color:rgba(129,140,248,.75)}
+.game-card-name{font-size:.9rem;font-weight:600}
+.game-card-gender{font-size:.75rem;color:var(--muted)}
+
+/* ADD */
+.game-add-btn{padding:.55rem 1.4rem;border-radius:999px;font-size:.9rem;font-weight:600;color:#fff;background:linear-gradient(135deg,#22c55e,#16a34a);border:1px solid rgba(34,197,94,.45);box-shadow:0 8px 22px rgba(34,197,94,.35);cursor:pointer;transition:.22s}
+.game-add-btn:hover{transform:translateY(-2px);filter:brightness(1.15);box-shadow:0 14px 32px rgba(34,197,94,.55),0 0 18px rgba(34,197,94,.45)}
+
+/* MODAL */
+.game-modal-back{position:fixed;inset:0;background:radial-gradient(1000px 650px at 10% -10%,rgba(37,99,235,.22),transparent),rgba(2,6,23,.94);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:1.1rem;z-index:60}
+.game-modal{width:100%;max-width:600px;border-radius:1.15rem;border:1px solid rgba(148,163,184,.45);background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.02)),rgba(2,6,23,.96);box-shadow:0 20px 65px rgba(0,0,0,.8);padding:1.2rem 1.4rem 1.3rem;display:flex;flex-direction:column;gap:.9rem}
+
+.game-modal-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:.7rem;border-bottom:1px solid rgba(148,163,184,.35)}
+.game-modal-title{font-size:1rem;font-weight:600}
+.game-close{width:30px;height:30px;border-radius:999px;border:1px solid rgba(148,163,184,.35);background:rgba(15,23,42,.6);color:var(--txt);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;box-shadow:0 3px 11px rgba(0,0,0,.45)}
+.game-close:hover{background:rgba(99,102,241,.25);border-color:rgba(129,140,248,.7);transform:translateY(-2px) scale(1.05)}
+.game-close:active{transform:scale(.92)}
+
+.game-note{padding:.35rem .75rem;border-radius:.65rem;font-size:.75rem;font-weight:500;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.12);animation:fadeIn .25s;white-space:nowrap;box-shadow:0 4px 18px rgba(0,0,0,.45)}
+.game-note.success{background:rgba(34,197,94,.15);border-color:rgba(74,222,128,.35);color:#bbf7d0}
+.game-note.error{background:rgba(239,68,68,.15);border-color:rgba(248,113,113,.35);color:#fecaca}
+
+/* FORM */
+.game-form{display:flex;flex-direction:column;gap:.75rem}
+.game-form label{font-size:.75rem;color:var(--muted)}
+.game-form input,.game-form select{border-radius:.65rem;border:1px solid rgba(148,163,184,.45);background:rgba(2,6,23,.92);padding:.45rem .6rem;color:var(--txt);font-size:.82rem;transition:.15s}
+.game-form input:focus,.game-form select:focus{border-color:var(--blue);box-shadow:0 0 0 1px rgba(99,102,241,.7)}
+
+.game-actions{display:flex;justify-content:center;align-items:center;gap:1rem;margin-top:.5rem}
+.game-save{padding:.5rem 1.2rem;border-radius:999px;font-size:.85rem;font-weight:600;border:none;color:#fff;background:linear-gradient(135deg,var(--blue),var(--green));cursor:pointer;box-shadow:0 12px 26px rgba(37,99,235,.6);transition:.15s}
+.game-save:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 18px 36px rgba(37,99,235,.75)}
+.game-del{padding:.5rem 1.2rem;border-radius:999px;font-size:.85rem;font-weight:600;border:1px solid rgba(248,113,113,.7);background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;cursor:pointer;box-shadow:0 14px 28px rgba(239,68,68,.55);transition:.15s}
+.game-del:hover{transform:translateY(-2px);filter:brightness(1.1);box-shadow:0 20px 42px rgba(239,68,68,.75)}
+
+/* DELETE CONFIRM */
+.game-del-box{margin-top:.7rem;border-radius:.75rem;padding:.8rem .95rem;background:rgba(220,38,38,.1);border:1px solid rgba(248,113,113,.45);text-align:center;animation:fadeIn .2s}
+.game-del-input{width:100%;padding:.45rem .7rem;border-radius:.65rem;border:1px solid rgba(148,163,184,.45);background:rgba(2,6,23,.9);color:var(--txt);font-size:.85rem;margin-top:.4rem}
+.game-del-confirm{padding:.45rem .8rem;border-radius:.65rem;background:#ef4444;color:#fff;border:none;cursor:pointer;font-size:1rem;margin-top:.5rem}
+.game-del-warn{margin-top:.4rem;font-size:.75rem;color:#fda4af}
+
+@keyframes fadeIn{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
+
