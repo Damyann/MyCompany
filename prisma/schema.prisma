@@ -1,0 +1,375 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum GameGender {
+  ALL
+  MALE
+  FEMALE
+}
+
+enum StaffRole {
+  DEALER
+  PITBOSS
+  SUPPORT
+  QA
+  TRAINING
+  CLEANERS
+}
+
+enum AccountRole {
+  STAFF
+  ADMIN
+  MAIN_PITBOSS
+}
+
+enum MonitoringKind {
+  TECHNICAL
+  PERFORMANCE
+}
+
+enum MonitoringScoreSign {
+  NEGATIVE
+  POSITIVE
+}
+
+model StaffMember {
+  id         Int       @id @default(autoincrement())
+  role       StaffRole
+  firstName  String
+  middleName String?
+  lastName   String
+  gender     Gender
+  startDate  DateTime
+  promotions Int       @default(0)
+  nickname   String?   @unique
+  email      String?   @unique
+  photoUrl   String?
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  account  UserAccount?
+  games    StaffGame[]
+  schedule Schedule[] @relation("StaffSchedules")
+
+  @@unique([id, role])
+  @@index([role])
+  @@index([isActive])
+}
+
+model UserAccount {
+  id           Int         @id @default(autoincrement())
+  role         AccountRole
+  username     String?     @unique
+  email        String?     @unique
+  passwordHash String
+  staffId      Int?        @unique
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  staff StaffMember? @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@index([role])
+  @@index([isActive])
+}
+
+model Game {
+  id     Int        @id @default(autoincrement())
+  name   String     @unique
+  abbr   String
+  gender GameGender @default(ALL)
+
+  staff            StaffGame[]
+  scoreboardMonths MonitoringScoreboardGame[]
+
+  @@index([abbr])
+  @@index([gender])
+}
+
+model StaffGame {
+  staffId Int
+  gameId  Int
+
+  staff StaffMember @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  game  Game        @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@id([staffId, gameId])
+  @@index([gameId])
+}
+
+model ScheduleMonth {
+  id              Int              @id @default(autoincrement())
+  role            StaffRole
+  year            Int
+  month           Int
+  isLocked        Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  entries         Schedule[]       @relation("MonthEntries")
+  monitoringMonth MonitoringMonth? @relation("ScheduleMonthMonitoring")
+
+  @@unique([role, year, month])
+  @@unique([id, role])
+  @@index([role])
+  @@index([year, month])
+}
+
+model Schedule {
+  id          Int       @id @default(autoincrement())
+  monthId     Int
+  role        StaffRole
+  staffId     Int
+  day         Int
+  shiftCodeId Int?
+  shiftRole   StaffRole?
+  billCodeId  Int?
+  billRole    StaffRole?
+  note        String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  month     ScheduleMonth @relation("MonthEntries", fields: [monthId, role], references: [id, role], onDelete: Cascade)
+  staff     StaffMember   @relation("StaffSchedules", fields: [staffId, role], references: [id, role], onDelete: Restrict)
+  shiftCode ShiftCode?    @relation("ScheduleShiftCode", fields: [shiftCodeId, shiftRole], references: [id, role], onDelete: Restrict)
+  billCode  BillCode?     @relation("ScheduleBillCode", fields: [billCodeId, billRole], references: [id, role], onDelete: Restrict)
+
+  @@unique([monthId, staffId, day])
+  @@index([monthId, day])
+  @@index([staffId])
+  @@index([role])
+  @@index([shiftCodeId, shiftRole])
+  @@index([billCodeId, billRole])
+}
+
+model ShiftSection {
+  id        Int       @id @default(autoincrement())
+  role      StaffRole
+  name      String
+  sortOrder Int       @default(0)
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  codes ShiftCode[] @relation("SectionCodes")
+
+  @@unique([role, name])
+  @@unique([id, role])
+  @@index([role, sortOrder])
+}
+
+model ShiftCode {
+  id        Int       @id @default(autoincrement())
+  role      StaffRole
+  sectionId Int
+  code      String
+  hours     Int       @default(8)
+  sortOrder Int       @default(0)
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  section   ShiftSection @relation("SectionCodes", fields: [sectionId, role], references: [id, role], onDelete: Cascade)
+  schedules Schedule[]   @relation("ScheduleShiftCode")
+
+  @@unique([sectionId, code])
+  @@unique([id, role])
+  @@index([code])
+  @@index([sectionId])
+  @@index([role])
+}
+
+model Bill {
+  id        Int       @id @default(autoincrement())
+  role      StaffRole
+  name      String
+  sortOrder Int       @default(0)
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  codes BillCode[] @relation("BillCodes")
+
+  @@unique([role, name])
+  @@unique([id, role])
+  @@index([role, sortOrder])
+}
+
+model BillCode {
+  id         Int       @id @default(autoincrement())
+  role       StaffRole
+  billId     Int
+  code       String
+  multiplier Float     @default(1)
+  sortOrder  Int       @default(0)
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  bill      Bill       @relation("BillCodes", fields: [billId, role], references: [id, role], onDelete: Cascade)
+  schedules Schedule[] @relation("ScheduleBillCode")
+
+  @@unique([billId, code])
+  @@unique([id, role])
+  @@index([code])
+  @@index([billId])
+  @@index([role])
+}
+
+model Settings {
+  id         Int      @id @default(autoincrement())
+  lastUpdate DateTime
+}
+
+model CalendarTotal {
+  id        Int       @id @default(autoincrement())
+  role      StaffRole @unique
+  totalCfg  Json
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model CalendarDP {
+  id        Int       @id @default(autoincrement())
+  role      StaffRole
+  year      Int
+  month     Int
+  dpCfg     Json
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([role, year, month])
+}
+
+model MonitoringMonth {
+  id              Int       @id @default(autoincrement())
+  role            StaffRole @default(DEALER)
+  year            Int
+  month           Int
+  shiftDivider    Float     @default(5)
+  shiftMaxCount   Int       @default(22)
+  minShiftCount   Int       @default(5)
+  gamePointWeight Float     @default(1)
+  budget          Float     @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  calendarMonth   ScheduleMonth              @relation("ScheduleMonthMonitoring", fields: [role, year, month], references: [role, year, month], onDelete: Restrict)
+  dayShifts       MonitoringDayShift[]
+  errorTypes      MonitoringErrorType[]
+  entries         MonitoringEntry[]
+  scoreboardGames MonitoringScoreboardGame[]
+
+  @@unique([role, year, month])
+  @@index([role])
+  @@index([year, month])
+  @@map("PerformanceMonth")
+}
+
+model MonitoringDayShift {
+  id         Int       @id @default(autoincrement())
+  role       StaffRole @default(DEALER)
+  year       Int
+  month      Int
+  day        Int
+  dealerKeys Json
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  monitoringMonth MonitoringMonth @relation(fields: [role, year, month], references: [role, year, month], onDelete: Cascade)
+
+  @@unique([role, year, month, day])
+  @@index([role, year, month, day])
+  @@map("PerformanceDayShift")
+}
+
+model MonitoringErrorType {
+  id        Int                 @id @default(autoincrement())
+  role      StaffRole           @default(DEALER)
+  year      Int
+  month     Int
+  kind      MonitoringKind      @default(TECHNICAL)
+  name      String
+  weight    Float               @default(1)
+  active    Boolean             @default(true)
+  scoreSign MonitoringScoreSign @default(NEGATIVE)
+  maxChecks Int                 @default(6)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+
+  monitoringMonth MonitoringMonth @relation(fields: [role, year, month], references: [role, year, month], onDelete: Cascade)
+
+  @@unique([role, year, month, kind, name])
+  @@index([role, year, month, kind])
+  @@map("PerformanceErrorType")
+}
+
+model MonitoringEntry {
+  id          Int            @id @default(autoincrement())
+  role        StaffRole      @default(DEALER)
+  year        Int
+  month       Int
+  day         Int
+  kind        MonitoringKind @default(TECHNICAL)
+  dealerKey   String
+  errorTypeId Int
+  count       Int            @default(0)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  monitoringMonth MonitoringMonth @relation(fields: [role, year, month], references: [role, year, month], onDelete: Cascade)
+
+  @@unique([role, year, month, day, kind, dealerKey, errorTypeId])
+  @@index([role, year, month, day, kind])
+  @@index([dealerKey])
+  @@index([errorTypeId])
+  @@map("PerformanceEntry")
+}
+
+model MonitoringGlobalErrorType {
+  id            Int                 @id @default(autoincrement())
+  role          StaffRole           @default(DEALER)
+  kind          MonitoringKind      @default(TECHNICAL)
+  name          String
+  weight        Float               @default(1)
+  defaultActive Boolean             @default(true)
+  scoreSign     MonitoringScoreSign @default(NEGATIVE)
+  maxChecks     Int                 @default(6)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@unique([role, kind, name])
+  @@index([role, kind])
+  @@map("PerformanceGlobalErrorType")
+}
+
+model MonitoringScoreboardGame {
+  id        Int       @id @default(autoincrement())
+  role      StaffRole @default(DEALER)
+  year      Int
+  month     Int
+  gameId    Int
+  active    Boolean   @default(true)
+  weight    Float     @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  monitoringMonth MonitoringMonth @relation(fields: [role, year, month], references: [role, year, month], onDelete: Cascade)
+  game            Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([role, year, month, gameId])
+  @@index([role, year, month])
+  @@index([gameId])
+  @@map("PerformanceScoreboardGame")
+}

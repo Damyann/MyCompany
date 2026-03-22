@@ -1,0 +1,14 @@
+export const D=Array.from({length:31},(_,i)=>i+1);
+export const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+export const STEP=6;
+export const COUNT_CAP=6;
+export const DAY_BOX_LIMIT=6;
+export const codeOf=(m,y)=>M[(m||1)-1]+String(y||0).slice(-2);
+export const parseCode=c=>{const s=String(c||"").trim();if(s.length!==5)return null;const a=s.slice(0,3),yy=s.slice(3);if(!/^\d{2}$/.test(yy))return null;const i=M.findIndex(z=>z.toLowerCase()===a.toLowerCase());if(i<0)return null;return{month:i+1,year:2000+Number(yy)}};
+export const closest=list=>{if(!list?.length)return null;const n=new Date(),nm=n.getMonth()+1,ny=n.getFullYear();let b=list[0],bd=1e9;for(const s of list){const d=Math.abs((s.year*12+s.month)-(ny*12+nm));if(d<bd){bd=d;b=s}}return b};
+export const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+export const maxChecksOf=v=>{const n=Number(v);return Number.isFinite(n)?Math.max(1,Math.min(12,Math.trunc(n))):COUNT_CAP};
+export const ek=(d,e)=>`${String(d)}:${String(e)}`;
+export const snap=(list,scope)=>(Array.isArray(list)?list:[]).map(t=>({id:Number(t?.id),name:String(t?.name||""),weight:Number(t?.weight??1),maxChecks:maxChecksOf(t?.maxChecks),active:scope==="month"?!!t?.active:undefined}));
+export const visibleBoxes=v=>maxChecksOf(v);
+export const buildCellBoxes=(count,maxChecks=COUNT_CAP)=>{const cap=maxChecksOf(maxChecks),c=clamp(Number(count)||0,0,cap),items=[];for(let i=1;i<=cap;i++){let kind="empty",action=null;if(i<c)kind="check";else if(c>0&&i===c){kind="minus";action="dec"}else if(i===c+1&&c<cap){kind="plus";action="inc"}items.push({key:`slot-${i}`,index:i-1,value:i,count:c,maxChecks:cap,kind,action})}return items};
