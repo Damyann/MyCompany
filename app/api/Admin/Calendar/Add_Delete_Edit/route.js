@@ -5,13 +5,14 @@ export const dynamic="force-dynamic";
 import {
   roleOf,toInt,normTotalCfg,normDpCfg,
   syncShiftBillCodes,getMonth,getStaff,
-  computeStaffStats
+  computeStaffStats,parseCell
 } from "../Math/Calculations";
 
 import {
   getTotalCfg,
   getDpCfg,
   getBillTokToKey,
+  getCellLookups,
   invalidateDayCard,
   invalidateBills,
   invalidateTotal,
@@ -78,8 +79,7 @@ export async function POST(req){
 
     if(action==="updateCell"){
       const monthId=toInt(b.monthId),staffId=toInt(b.staffId),day=toInt(b.day);
-      const shiftCodeId=toInt(b.shiftCodeId),billCodeId=toInt(b.billCodeId);
-      const note=(b.note??"").toString().trim()||null;
+      let shiftCodeId=toInt(b.shiftCodeId),billCodeId=toInt(b.billCodeId),note=(b.note??"").toString().trim()||null;
       if(!monthId||!staffId||!day) return noStore({error:"Missing"},400);
 
       const m=await getMonth(monthId);
@@ -92,6 +92,8 @@ export async function POST(req){
 
       const dim=new Date(m.year,m.month,0).getDate();
       if(day<1||day>dim) return noStore({error:"Invalid day"},400);
+
+      if(typeof b.raw==="string")({shiftCodeId,billCodeId,note}=parseCell(b.raw,await getCellLookups(m.role)));
 
       await prisma.schedule.upsert({
         where:{monthId_staffId_day:{monthId:m.id,staffId:staff.id,day}},

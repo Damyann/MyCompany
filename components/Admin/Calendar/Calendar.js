@@ -10,8 +10,7 @@ import Calendar_Schedule from"./Calendar_Schedule";
 
 import{
 decodeCode,prettyCode,buildScheduleModel,buildMonthPickerModel,scheduleListToCodes,pickClosestCode,
-getDaysInMonth,buildWeekdayByDay,getActiveSortedSections,buildShiftAuto,sortScheduleRows,buildDcByDay,
-buildCellLookups,parseCell
+getDaysInMonth,buildWeekdayByDay,getActiveSortedSections,buildShiftAuto,sortScheduleRows,buildDcByDay
 }from"./Calendar_Math";
 
 import{
@@ -252,15 +251,10 @@ const daysInMonth=schedule?getDaysInMonth(schedule.year,schedule.month):31;
 const weekdayByDay=schedule?buildWeekdayByDay(schedule.year,schedule.month,31):days.map(()=>"");
 const dcByDay=buildDcByDay(sortedRows,dcSorted,31);
 const {monthGroups,monthYears}=buildMonthPickerModel(dropdownItems);
-const lookups=buildCellLookups(dcSorted,bills);
-
-
-
 const saveCell=async(staffId,day,raw)=>{
   if(!schedule?.monthId||!staffId||schedule.isLocked)return;
   try{
-    const {shiftCodeId,billCodeId,note}=parseCell(raw,lookups);
-    const j=await updateCell(ROLE,{monthId:schedule.monthId,staffId,day,shiftCodeId,billCodeId,note});bustMonthCache();
+    const j=await updateCell(ROLE,{monthId:schedule.monthId,staffId,day,raw});bustMonthCache();
     if(j?.stats) setSchedule(s=>!s?s:{...s,statsByStaffId:{...(s.statsByStaffId||{}),[String(staffId)]:j.stats}});
   }catch(e){console.error("Save error:",e?.message||e)}
 };

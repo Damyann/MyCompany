@@ -234,7 +234,6 @@ export default function Calendar_Settings({
                         <div className="calc-chips">
                           {isShifts && Array.isArray(shiftHours) && shiftHours.some(h => (shiftAutoByHours?.[h] || []).length) ? (
                             <div className="calc-group hx bill-auto">
-                              <div className="calc-group-title">AUTO</div>
                               <div className="bill-auto-hours">
                                 {shiftHours.filter(h => (shiftAutoByHours?.[h] || []).length).map(h => (
                                   <div key={h} className="bill-auto-hour">
@@ -316,7 +315,6 @@ export default function Calendar_Settings({
 
                           {(!isShifts && !isTotal && !isDP) && (
                             <div className="calc-group hx">
-                              <div className="calc-group-title">ADD</div>
                               <div className="calc-group-list">
                                 {(b.codes || []).filter(c => c && c.isActive !== false).length
                                   ? (() => {

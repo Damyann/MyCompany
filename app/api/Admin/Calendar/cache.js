@@ -9,6 +9,7 @@ import {
   DEF_TOTAL,
   ensureBills,
   buildBillTokToKey,
+  buildCellLookups,
 } from "./Math/Calculations";
 
 const TTL_MS = 10 * 60 * 1000; // 10 min
@@ -30,10 +31,11 @@ const _delPrefix = (prefix) => {
 const rk = (role) => `r:${role}:`;
 
 export const invalidateRole = (role) => _delPrefix(rk(role));
-export const invalidateDayCard = (role) => _c.delete(`${rk(role)}daycard`);
+export const invalidateDayCard = (role) => {_c.delete(`${rk(role)}daycard`);_c.delete(`${rk(role)}cellLookups`);};
 export const invalidateBills = (role) => {
   _c.delete(`${rk(role)}bills`);
   _c.delete(`${rk(role)}billTokToKey`);
+  _c.delete(`${rk(role)}cellLookups`);
 };
 export const invalidateTotal = (role) => _c.delete(`${rk(role)}total`);
 export const invalidateDp = (role, year, month) =>
@@ -121,6 +123,11 @@ export const getBills = (role) =>
         },
       },
     })
+  );
+
+export const getCellLookups = (role) =>
+  _get(`${rk(role)}cellLookups`, async () =>
+    buildCellLookups(await getDayCard(role), await getBills(role))
   );
 
 export const getBillTokToKey = (role) =>

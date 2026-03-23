@@ -11,6 +11,8 @@ export const roleOf=v=>{const r=String(v||"DEALER").toUpperCase();return ROLES.h
 export const normCode=x=>String(x??"").trim().replace(/\s+/g,"").toUpperCase();
 export const normTotalCfg=v=>Object.fromEntries(TOTAL_KEYS.map(k=>[k,v?.[k]!==false]));
 export const normDpCfg=v=>{const o={};for(let d=1;d<=31;d++){const k=""+d,a=Array.isArray(v?.[k])?v[k]:Array.isArray(v?.[d])?v[d]:[];const u=[...new Set((a||[]).map(normCode).filter(Boolean))].sort();if(u.length)o[k]=u}return o};
+export const toks=v=>{const s=(v??"").toString().trim().replace(/(\d+)\s+([A-Za-z]+)/g,"$1$2");return s?s.split(/[,\s/]+/).filter(Boolean).map(normCode):[]};
+const cleanShift=x=>(x??"").toString().trim().replace(/(\d+)\s+([A-Za-z]+)/g,"$1$2").replace(/\s+/g,"");
 
 const hoursRank=h=>h===4?0:h===8?1:h===12?2:h===16?3:9;
 
@@ -85,6 +87,33 @@ export const buildBillTokToKey=bills=>{
     }
   }
   return m;
+};
+
+export const buildCellLookups=(dcSorted,bills)=>{
+  const shiftLookup=new Map(),billLookup=new Map();
+  for(const s of (dcSorted||[])) for(const c of (s.codes||[])){
+    const k=normCode(cleanShift(c.code));
+    if(k&&!shiftLookup.has(k)) shiftLookup.set(k,c.id);
+  }
+  for(const b of (bills||[])){
+    if(/^shifts$/i.test((b.name||"").toString().trim())) continue;
+    for(const c of (b.codes||[])){
+      const k=normCode(c.code);
+      if(k&&!billLookup.has(k)) billLookup.set(k,c.id);
+    }
+  }
+  return {shiftLookup,billLookup};
+};
+
+export const parseCell=(raw,{shiftLookup,billLookup}={})=>{
+  const ts=toks(raw),rest=[];
+  let shiftCodeId=null,billCodeId=null;
+  for(const t of ts){
+    if(!shiftCodeId&&shiftLookup?.has?.(t)) shiftCodeId=shiftLookup.get(t);
+    else if(!billCodeId&&billLookup?.has?.(t)) billCodeId=billLookup.get(t);
+    else rest.push(t);
+  }
+  return {shiftCodeId,billCodeId,note:rest.length?rest.join(" "):null};
 };
 
 export const computeMonthStats=(entries,year,month,billTokToKey,totalCfg,dpCfg)=>{

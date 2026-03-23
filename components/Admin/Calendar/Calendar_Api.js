@@ -37,15 +37,14 @@ export const getCalendarDP=(role,month,year)=>getCalendar({dpCfg:1,role,month,ye
 export const createSchedule=(role,month,year)=>postCalendar({action:"createSchedule",role,month,year});
 export const addStaffToMonth=(role,monthId,staffId)=>postCalendar({action:"addStaff",role,monthId,staffId});
 
-export const updateCell=(role,{monthId,staffId,day,shiftCodeId,billCodeId,note})=>postCalendar({
+export const updateCell=(role,{monthId,staffId,day,raw,shiftCodeId,billCodeId,note})=>postCalendar({
   action:"updateCell",
   role,
   monthId,
   staffId,
   day,
-  shiftCodeId:shiftCodeId??null,
-  billCodeId:billCodeId??null,
-  note:(note??"").toString().trim()||null,
+  ...(raw!=null?{raw:(raw??"").toString()}:{}),
+  ...(raw==null?{shiftCodeId:shiftCodeId??null,billCodeId:billCodeId??null,note:(note??"").toString().trim()||null}:{}),
 });
 
 // DayCard: sections
