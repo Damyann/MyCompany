@@ -192,10 +192,10 @@ const staffOf = (e)=> e?.staff || e?.staffMember || null;
 const toInt2 = (v)=>{ const n=Number(v); return Number.isFinite(n)?Math.trunc(n):null; };
 
 export const scheduleEntryToCell = (e)=>{
-  const sc=e?.shiftCode?.code || "";
-  const bc=e?.billCode?.code || "";
+  const sc=(e?.shiftCode?.code||"").toString().trim();
+  const bc=(e?.billCode?.code||"").toString().trim();
   const note=(e?.note ?? "").toString().trim();
-  return [sc, bc, note].filter(Boolean).join(" ").trim();
+  return [...new Set([sc,bc,note].filter(Boolean))].join(" ").trim();
 };
 
 export const buildScheduleModel = (apiResp, fallbackMonth, fallbackYear, role)=>{

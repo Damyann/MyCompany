@@ -90,31 +90,38 @@ export const buildBillTokToKey=bills=>{
 };
 
 export const buildCellLookups=(dcSorted,bills)=>{
-  const shiftLookup=new Map(),billLookup=new Map();
+  const shiftLookup=new Map(),billLookup=new Map(),nightLookup=new Map();
   for(const s of (dcSorted||[])) for(const c of (s.codes||[])){
     const k=normCode(cleanShift(c.code));
     if(k&&!shiftLookup.has(k)) shiftLookup.set(k,c.id);
   }
   for(const b of (bills||[])){
-    if(/^shifts$/i.test((b.name||"").toString().trim())) continue;
+    const name=(b.name||"").toString().trim();
+    if(/^shifts$/i.test(name)) continue;
+    const isNight=/^nights$/i.test(name);
     for(const c of (b.codes||[])){
       const k=normCode(c.code);
-      if(k&&!billLookup.has(k)) billLookup.set(k,c.id);
+      if(!k) continue;
+      if(!billLookup.has(k)) billLookup.set(k,c.id);
+      if(isNight&&!nightLookup.has(k)) nightLookup.set(k,c.id);
     }
   }
-  return {shiftLookup,billLookup};
+  return {shiftLookup,billLookup,nightLookup};
 };
 
-export const parseCell=(raw,{shiftLookup,billLookup}={})=>{
+export const parseCell=(raw,{shiftLookup,billLookup,nightLookup}={})=>{
   const ts=toks(raw),rest=[];
-  let shiftCodeId=null,billCodeId=null;
+  let shiftCodeId=null,billCodeId=null,shiftTok="";
   for(const t of ts){
-    if(!shiftCodeId&&shiftLookup?.has?.(t)) shiftCodeId=shiftLookup.get(t);
+    if(!shiftCodeId&&shiftLookup?.has?.(t)){shiftCodeId=shiftLookup.get(t);shiftTok=t;}
     else if(!billCodeId&&billLookup?.has?.(t)) billCodeId=billLookup.get(t);
     else rest.push(t);
   }
+  if(!billCodeId&&shiftTok&&nightLookup?.has?.(shiftTok)) billCodeId=nightLookup.get(shiftTok);
   return {shiftCodeId,billCodeId,note:rest.length?rest.join(" "):null};
 };
+
+const isNightTok=(tok,billTokToKey)=>billTokToKey?.get?.(normCode(tok))?.key==="Nights";
 
 export const computeMonthStats=(entries,year,month,billTokToKey,totalCfg,dpCfg)=>{
   const dim=new Date(year,month,0).getDate();
@@ -137,15 +144,17 @@ export const computeMonthStats=(entries,year,month,billTokToKey,totalCfg,dpCfg)=
       }
     }
 
+    let hasNight=false;
     const bc=e?.billCode;
     if(bc){
       const ent=billTokToKey?.get?.(normCode(bc.code));
       if(ent){
         if(ent.key==="SICK") s.SICK++;
         else if(ent.key==="PH") s.PH+=Number(ent.mult)||1;
-        else if(ent.key==="Nights") s.Nights++;
+        else if(ent.key==="Nights"){s.Nights++;hasNight=true;}
       }
     }
+    if(!hasNight&&isNightTok(sc?.code,billTokToKey)) s.Nights++;
     by.set(staffId,s);
   }
 
