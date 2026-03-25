@@ -49,6 +49,10 @@ export default function Calendar_Settings({
     const n = Number(s);
     return Number.isFinite(n) ? Math.max(0, Math.round(n * 2) / 2) : null;
   };
+  const totalKeys = ["Shifts", "SICK", "PH", "Bonus", "DP"];
+  const normTotalDraft = v => Object.fromEntries(totalKeys.map(k => [k, v?.[k] !== false]));
+  const sameTotalCfg = (a, b) => totalKeys.every(k => (a?.[k] !== false) === (b?.[k] !== false));
+  const monthNamesBg = ["Януари", "Февруари", "Март", "Април", "Май", "Юни", "Юли", "Август", "Септември", "Октомври", "Ноември", "Декември"];
 
   const dpDim = (dpYear && dpMonth) ? new Date(dpYear, dpMonth, 0).getDate() : 31;
   const [dpDay, setDpDay] = useState(1);
@@ -66,16 +70,26 @@ export default function Calendar_Settings({
   }, [shiftAutoByHours]);
   const dpToggle = code => { const k = norm(code), day = String(dpDay); setDpCfg?.(c => { const n = { ...(c || {}) }; const s = new Set((n[day] || []).map(norm)); s.has(k) ? s.delete(k) : s.add(k); const a = [...s].sort(); a.length ? n[day] = a : delete n[day]; return n }) };
   const dpClear = () => { const day = String(dpDay); setDpCfg?.(c => { const n = { ...(c || {}) }; delete n[day]; return n }) };
+  const [totalDraft, setTotalDraft] = useState(normTotalDraft(totalCfg));
+  const [totalSaving, setTotalSaving] = useState(false);
+  useEffect(() => { setTotalDraft(normTotalDraft(totalCfg)) }, [totalCfg]);
+  const totalDirty = !sameTotalCfg(totalDraft, totalCfg);
+  const totalSave = async () => {
+    if (!totalDirty || totalSaving) return;
+    try { setTotalSaving(true); await setTotalCfg?.(totalDraft) } catch {} finally { setTotalSaving(false) }
+  };
   const [bonusInput, setBonusInput] = useState(fmtBonus(bonusCfg?.threshold));
+  const [bonusSaving, setBonusSaving] = useState(false);
   useEffect(() => { setBonusInput(fmtBonus(bonusCfg?.threshold)) }, [bonusCfg?.threshold]);
   const bonusMonthWorkdays = Number.isFinite(Number(bonusCfg?.monthWorkdays)) ? Math.max(0, Math.trunc(Number(bonusCfg.monthWorkdays))) : 0;
   const bonusYearWorkdays = Number.isFinite(Number(bonusCfg?.yearWorkdays)) ? Math.max(0, Math.trunc(Number(bonusCfg.yearWorkdays))) : 0;
-  const bonusCommit = () => {
-    const next = parseBonus(bonusInput);
-    const fallback = Number(bonusCfg?.threshold) || 22;
-    const threshold = next == null ? fallback : next;
-    setBonusInput(fmtBonus(threshold));
-    if (threshold !== fallback) setBonusCfg?.(c => ({ ...(c || {}), threshold }));
+  const bonusMonthName = dpMonth >= 1 && dpMonth <= 12 ? monthNamesBg[dpMonth - 1] : "";
+  const bonusParsed = parseBonus(bonusInput);
+  const bonusCurrent = Number.isFinite(Number(bonusCfg?.threshold)) ? Number(bonusCfg.threshold) : 22;
+  const bonusDirty = bonusParsed != null && bonusParsed !== bonusCurrent;
+  const bonusSave = async () => {
+    if (!bonusDirty || bonusParsed == null || bonusSaving || !dpMonth || !dpYear) return;
+    try { setBonusSaving(true); await setBonusCfg?.({ ...(bonusCfg || {}), threshold: bonusParsed }) } catch {} finally { setBonusSaving(false) }
   };
 
 
@@ -327,31 +341,30 @@ export default function Calendar_Settings({
                           {isBonus && (
                             <div className="calc-group hx">
                               <div className="bonus-config">
-                                <div className="bonus-field">
-                                  <div className="bonus-field-label">Праг</div>
-                                  <div className="bonus-field-row">
-                                    <input
-                                      type="number"
-                                      min="0"
-                                      step="0.5"
-                                      className="bonus-threshold-inp"
-                                      value={bonusInput}
-                                      onChange={e => setBonusInput(e.target.value)}
-                                      onBlur={bonusCommit}
-                                      onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); e.currentTarget.blur() } }}
-                                      disabled={!dpMonth || !dpYear}
-                                    />
-                                    <span className="bonus-field-suffix">смени</span>
-                                  </div>
+                                <div className="bonus-field-row bonus-field-row-main">
+                                  <span className="bonus-field-text">Брой смени за месеца</span>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    step="0.5"
+                                    className="bonus-threshold-inp"
+                                    value={bonusInput}
+                                    onChange={e => setBonusInput(e.target.value)}
+                                    onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); bonusSave() } }}
+                                    disabled={!dpMonth || !dpYear || bonusSaving}
+                                  />
+                                  <button type="button" className="calc-save bonus-save" onClick={bonusSave} disabled={!bonusDirty || bonusParsed == null || !dpMonth || !dpYear || bonusSaving}>{bonusSaving ? "..." : "Save"}</button>
                                 </div>
                                 <div className="bonus-mini-panels">
                                   <div className="bonus-mini-panel">
                                     <span>Месец</span>
                                     <b>{dpMonth && dpYear ? bonusMonthWorkdays : "—"}</b>
+                                    <small>{dpMonth && dpYear ? bonusMonthName : "—"}</small>
                                   </div>
                                   <div className="bonus-mini-panel">
                                     <span>Година</span>
                                     <b>{dpYear ? bonusYearWorkdays : "—"}</b>
+                                    <small>{dpYear || "—"}</small>
                                   </div>
                                 </div>
                               </div>
@@ -359,12 +372,15 @@ export default function Calendar_Settings({
                           )}
                           {isTotal && (
                             <div className="calc-group hx">
-                              <div className="calc-group-list bill-total-toggles">
-                                {(["Shifts", "SICK", "PH", "Bonus", "DP"]).map(k => {
-                                  const on = totalCfg?.[k] !== false; return (
-                                    <button key={k} type="button" className={"bill-toggle " + (on ? "on" : "off")} onClick={() => setTotalCfg?.(c => ({ ...c, [k]: !on }))}>{k}</button>
-                                  )
-                                })}
+                              <div className="bill-total-config">
+                                <div className="calc-group-list bill-total-toggles">
+                                  {totalKeys.map(k => {
+                                    const on = totalDraft?.[k] !== false; return (
+                                      <button key={k} type="button" className={"bill-toggle " + (on ? "on" : "off")} onClick={() => setTotalDraft(c => ({ ...c, [k]: !on }))}>{k}</button>
+                                    )
+                                  })}
+                                </div>
+                                <button type="button" className="calc-save bill-total-save" onClick={totalSave} disabled={!totalDirty || totalSaving}>{totalSaving ? "..." : "Save"}</button>
                               </div>
                             </div>
                           )}
@@ -394,7 +410,7 @@ export default function Calendar_Settings({
                           )}
                         </div>
 
-                        {(!isShifts && !isTotal && !isDP) && (
+                        {(!isShifts && !isTotal && !isDP && !isBonus) && (
                           <div className="calc-addline">
                             <input className="calc-code-inp" value={b._code || ""}
                               onChange={e => setBills(a => a.map(x => x.id === b.id ? { ...x, _code: e.target.value } : x))}
