@@ -263,11 +263,13 @@ export default function Calendar_Settings({
                   </div></div>
 
                 {(bills || []).map(b => {
-                  const name = (b.name || "").toString().trim(); const isShifts = /^shifts$/i.test(name); const isTotal = /^total$/i.test(name); const isDP = /^dp$/i.test(name); const isBonus = /^bonus$/i.test(name); return (
+                  const name = (b.name || "").toString().trim();
+                  const isShifts = /^shifts$/i.test(name), isTotal = /^total$/i.test(name), isDP = /^dp$/i.test(name), isBonus = /^bonus$/i.test(name), isSick = /^sick$/i.test(name), isPH = /^ph$/i.test(name), isNights = /^nights$/i.test(name), isInlineBill = isSick || isPH || isNights;
+                  return (
                     <div key={b.id} className="calc-row">
                       <div className="calc-sec"><div className="bill-name">{b.name}</div></div>
 
-                      <div className="calc-codes">
+                      <div className={"calc-codes" + (isInlineBill ? " bill-inline" : "")}>
                         <div className="calc-chips">
                           {isShifts && Array.isArray(shiftHours) && shiftHours.some(h => (shiftAutoByHours?.[h] || []).length) ? (
                             <div className="calc-group hx bill-auto">
@@ -350,7 +352,6 @@ export default function Calendar_Settings({
                                     className="bonus-threshold-inp"
                                     value={bonusInput}
                                     onChange={e => setBonusInput(e.target.value)}
-                                    onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); bonusSave() } }}
                                     disabled={!dpMonth || !dpYear || bonusSaving}
                                   />
                                   <button type="button" className="calc-save bonus-save" onClick={bonusSave} disabled={!bonusDirty || bonusParsed == null || !dpMonth || !dpYear || bonusSaving}>{bonusSaving ? "..." : "Save"}</button>
@@ -391,10 +392,7 @@ export default function Calendar_Settings({
                                 {(b.codes || []).filter(c => c && c.isActive !== false).length
                                   ? (() => {
                                     const active = (b.codes || []).filter(c => c && c.isActive !== false);
-                                    const isSick = /^sick$/i.test(name);
-                                    const isPH = /^ph$/i.test(name);
-                                    const isNights = /^nights$/i.test(name);
-                                    const editable = isSick || isPH || isNights;
+                                    const editable = isInlineBill;
                                     const list = editable ? sortBillCodesByNumber(active) : active;
                                     return list.map(c => editable ? (
                                       <button key={c.id} type="button" className={"calc-chip bill-chip-edit"+(isPH?" bill-chip-ph":"")} onClick={()=>billOpenEdit(b,c)} disabled={billsBusy} title="Edit">{prettyCode(c.code)}{isPH?<span className="bill-mult">×{Number(c.multiplier||1)}</span>:null}</button>
