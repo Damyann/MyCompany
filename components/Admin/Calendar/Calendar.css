@@ -146,8 +146,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 .calc-codes.bill-inline .calc-chips{flex:1;min-width:0}
 .calc-codes.bill-inline .calc-group{height:100%;align-items:center}
 .calc-codes.bill-inline .calc-group-list{align-content:center}
-.calc-codes.bill-inline .calc-addline{width:240px;min-width:240px;flex:0 0 240px;align-self:stretch}
-.calc-codes.bill-inline .calc-code-inp{width:100%;min-width:0;max-width:none}
+.calc-codes.bill-inline .calc-addline{width:clamp(300px,38%,420px);min-width:300px;max-width:420px;flex:0 0 clamp(300px,38%,420px);align-self:stretch}
+.calc-codes.bill-inline .calc-code-inp{width:100%;min-width:0;max-width:none;flex:1 1 auto}
 .bill-chip-del{position:relative;padding-right:26px}
 .bill-chip-del i{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-style:normal;font-weight:1000;color:rgba(255,255,255,.85)}
 .bill-chip-del:hover i{color:#fff}
