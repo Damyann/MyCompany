@@ -38,21 +38,6 @@ export default function Calendar_Settings({
     await billDelCodeDirect?.(billEdit.billId, billEdit.codeId);
     if (!billsBusy) setBillEdit(null);
   };
-  const countWorkdays = (y, m) => {
-    if (!y || !m) return 0;
-    let n = 0, dim = new Date(y, m, 0).getDate();
-    for (let d = 1; d <= dim; d++) {
-      const wd = new Date(y, m - 1, d).getDay();
-      if (wd !== 0 && wd !== 6) n++;
-    }
-    return n;
-  };
-  const countYearWorkdays = y => {
-    if (!y) return 0;
-    let n = 0;
-    for (let m = 1; m <= 12; m++) n += countWorkdays(y, m);
-    return n;
-  };
   const fmtBonus = v => {
     const n = Number(v);
     if (!Number.isFinite(n)) return "22";
@@ -83,8 +68,8 @@ export default function Calendar_Settings({
   const dpClear = () => { const day = String(dpDay); setDpCfg?.(c => { const n = { ...(c || {}) }; delete n[day]; return n }) };
   const [bonusInput, setBonusInput] = useState(fmtBonus(bonusCfg?.threshold));
   useEffect(() => { setBonusInput(fmtBonus(bonusCfg?.threshold)) }, [bonusCfg?.threshold]);
-  const bonusMonthWorkdays = useMemo(() => countWorkdays(dpYear, dpMonth), [dpYear, dpMonth]);
-  const bonusYearWorkdays = useMemo(() => countYearWorkdays(dpYear), [dpYear]);
+  const bonusMonthWorkdays = Number.isFinite(Number(bonusCfg?.monthWorkdays)) ? Math.max(0, Math.trunc(Number(bonusCfg.monthWorkdays))) : 0;
+  const bonusYearWorkdays = Number.isFinite(Number(bonusCfg?.yearWorkdays)) ? Math.max(0, Math.trunc(Number(bonusCfg.yearWorkdays))) : 0;
   const bonusCommit = () => {
     const next = parseBonus(bonusInput);
     const fallback = Number(bonusCfg?.threshold) || 22;

@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 export const dynamic="force-dynamic";
 
 import {
-  roleOf,toInt,normTotalCfg,normDpCfg,normBonusCfg,
+  roleOf,toInt,normTotalCfg,normDpCfg,normBonusCfg,buildBonusCfg,
   syncShiftBillCodes,getMonth,getStaff,
   computeStaffStats,parseCell
 } from "../Math/Calculations";
@@ -53,7 +53,7 @@ export async function POST(req){
       const cfg=normBonusCfg(b?.bonusCfg);
       const s=await prisma.calendarBonus.upsert({where:{role_year_month:{role,year,month}},update:{threshold:cfg.threshold},create:{role,year,month,threshold:cfg.threshold},select:{threshold:1}});
       invalidateBonus(role,year,month);
-      return noStore({bonusCfg:normBonusCfg(s)});
+      return noStore({bonusCfg:buildBonusCfg(s,year,month)});
     }
 
     if(action==="createSchedule"){

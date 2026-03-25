@@ -6,7 +6,7 @@ import {
   toInt,
   normTotalCfg,
   normDpCfg,
-  normBonusCfg,
+  buildBonusCfg,
   DEF_TOTAL,
   DEFAULT_BONUS_THRESHOLD,
   ensureBills,
@@ -89,7 +89,7 @@ export const getBonusCfg = (role, year, month) =>
         select: { threshold: 1 },
       });
     }
-    return normBonusCfg(row);
+    return buildBonusCfg(row,y,m);
   });
 
 export const getDayCard = (role) =>

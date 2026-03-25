@@ -45,7 +45,7 @@ const setDpCfgPersist=up=>setDpCfg(prev=>{const next=typeof up==="function"?up(p
 useEffect(()=>{let dead=false;const m=schedule?.month,y=schedule?.year;if(!m||!y){setDpCfg({});return}(async()=>{try{const j=await getCalendarDP(ROLE,m,y);if(dead)return;setDpCfg(j?.dpCfg||{});}catch{if(!dead)setDpCfg({});}})();return()=>{dead=true};},[ROLE,schedule?.month,schedule?.year]);
 
 const[bonusCfg,setBonusCfg]=useState(DEF_BONUS);
-const normBonusCfg=v=>{const raw=v&&typeof v==="object"?(v.threshold??v.bonusThreshold):v;const n=Number(raw);return{threshold:Number.isFinite(n)?Math.max(0,Math.round(n*2)/2):22}};
+const normBonusCfg=v=>{const raw=v&&typeof v==="object"?(v.threshold??v.bonusThreshold):v;const n=Number(raw),threshold=Number.isFinite(n)?Math.max(0,Math.round(n*2)/2):22,monthWorkdays=Math.max(0,Math.trunc(Number(v?.monthWorkdays)||0)),yearWorkdays=Math.max(0,Math.trunc(Number(v?.yearWorkdays)||0));return{threshold,monthWorkdays,yearWorkdays}};
 const setBonusCfgPersist=up=>setBonusCfg(prev=>{const next=typeof up==="function"?up(prev):up;const cfg=normBonusCfg(next);const m=schedule?.month,y=schedule?.year;if(m&&y)saveCalendarBonus(ROLE,m,y,cfg).then(()=>{bustAndRefresh();}).catch(()=>{});return cfg;});
 useEffect(()=>{let dead=false;const m=schedule?.month,y=schedule?.year;if(!m||!y){setBonusCfg(DEF_BONUS);return}(async()=>{try{const j=await getCalendarBonus(ROLE,m,y);if(dead)return;setBonusCfg(normBonusCfg(j?.bonusCfg));}catch{if(!dead)setBonusCfg(DEF_BONUS);}})();return()=>{dead=true};},[ROLE,schedule?.month,schedule?.year]);
 
