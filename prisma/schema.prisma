@@ -252,6 +252,20 @@ model CalendarDP {
   @@unique([role, year, month])
 }
 
+
+model CalendarBonus {
+  id        Int       @id @default(autoincrement())
+  role      StaffRole
+  year      Int
+  month     Int
+  threshold Float     @default(22)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([role, year, month])
+  @@index([role, year, month])
+}
+
 model MonitoringMonth {
   id              Int       @id @default(autoincrement())
   role            StaffRole @default(DEALER)

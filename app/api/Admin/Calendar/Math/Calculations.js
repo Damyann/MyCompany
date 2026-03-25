@@ -5,12 +5,14 @@ export const ROLES=new Set(["DEALER","PITBOSS","SUPPORT","QA","TRAINING","CLEANE
 export const BILL_NAMES=["Shifts","SICK","PH","Nights","TOTAL","Bonus","DP"];
 export const TOTAL_KEYS=["Shifts","SICK","PH","Bonus","DP"]; // Nights се включва по default
 export const DEF_TOTAL=Object.fromEntries(TOTAL_KEYS.map(k=>[k,true]));
+export const DEFAULT_BONUS_THRESHOLD=22;
 
 export const toInt=v=>{const n=Number(v);return Number.isFinite(n)?Math.trunc(n):null;};
 export const roleOf=v=>{const r=String(v||"DEALER").toUpperCase();return ROLES.has(r)?r:"DEALER";};
 export const normCode=x=>String(x??"").trim().replace(/\s+/g,"").toUpperCase();
 export const normTotalCfg=v=>Object.fromEntries(TOTAL_KEYS.map(k=>[k,v?.[k]!==false]));
 export const normDpCfg=v=>{const o={};for(let d=1;d<=31;d++){const k=""+d,a=Array.isArray(v?.[k])?v[k]:Array.isArray(v?.[d])?v[d]:[];const u=[...new Set((a||[]).map(normCode).filter(Boolean))].sort();if(u.length)o[k]=u}return o};
+export const normBonusCfg=v=>{const raw=v&&typeof v==="object"?(v.threshold??v.bonusThreshold):v;const n=Number(raw);const threshold=Number.isFinite(n)?Math.max(0,Math.round(n*2)/2):DEFAULT_BONUS_THRESHOLD;return{threshold}};
 export const toks=v=>{const s=(v??"").toString().trim().replace(/(\d+)\s+([A-Za-z]+)/g,"$1$2");return s?s.split(/[,\s/]+/).filter(Boolean).map(normCode):[]};
 const cleanShift=x=>(x??"").toString().trim().replace(/(\d+)\s+([A-Za-z]+)/g,"$1$2").replace(/\s+/g,"");
 
@@ -123,7 +125,7 @@ export const parseCell=(raw,{shiftLookup,billLookup,nightLookup}={})=>{
 
 const isNightTok=(tok,billTokToKey)=>billTokToKey?.get?.(normCode(tok))?.key==="Nights";
 
-export const computeMonthStats=(entries,year,month,billTokToKey,totalCfg,dpCfg)=>{
+export const computeMonthStats=(entries,year,month,billTokToKey,totalCfg,dpCfg,bonusCfg)=>{
   const dim=new Date(year,month,0).getDate();
   const dp=dpCfg||{};
   const wantByDay=Array.from({length:dim+1},(_,d)=>{const sel=dp[String(d)]||dp[d];return Array.isArray(sel)&&sel.length?new Set(sel.map(normCode)):null;});
@@ -159,11 +161,12 @@ export const computeMonthStats=(entries,year,month,billTokToKey,totalCfg,dpCfg)=
   }
 
   const cfg=totalCfg||{};
+  const bonusThreshold=normBonusCfg(bonusCfg).threshold;
   const out={};
   for(const [staffId,s] of by){
     const shifts=(s.h||0)/8;
     const dpSh=(s.dpH||0)/8;
-    const bonus=Math.max(0,(shifts-22)*0.5);
+    const bonus=Math.max(0,(shifts-bonusThreshold)*0.5);
 
     const total=
       (cfg.Shifts!==false?shifts:0)+
@@ -186,7 +189,7 @@ export const computeMonthStats=(entries,year,month,billTokToKey,totalCfg,dpCfg)=
   return out;
 };
 
-export const computeStaffStats=(staffId,entries,year,month,billTokToKey,totalCfg,dpCfg)=>{
-  const m=computeMonthStats(entries,year,month,billTokToKey,totalCfg,dpCfg);
+export const computeStaffStats=(staffId,entries,year,month,billTokToKey,totalCfg,dpCfg,bonusCfg)=>{
+  const m=computeMonthStats(entries,year,month,billTokToKey,totalCfg,dpCfg,bonusCfg);
   return m?.[staffId]||zero();
 };

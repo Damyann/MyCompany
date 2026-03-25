@@ -11,6 +11,7 @@ import {
   getDayCard,
   getTotalCfg,
   getDpCfg,
+  getBonusCfg,
   getBills,
   getBillTokToKey,
 } from "../cache";
@@ -38,6 +39,12 @@ export async function GET(req){
     return noStore({dpCfg});
   }
 
+  if(sp.get("bonusCfg")){
+    if(!month||!year) return noStore({error:"Missing month/year"},400);
+    const bonusCfg=await getBonusCfg(role,year,month);
+    return noStore({bonusCfg});
+  }
+
   if(sp.get("bills")){
     const bills=await getBills(role);
     return noStore({bills});
@@ -52,9 +59,10 @@ export async function GET(req){
     });
     if(!m) return noStore(null);
 
-    const [totalCfg,dpCfg,billTokToKey]=await Promise.all([
+    const [totalCfg,dpCfg,bonusCfg,billTokToKey]=await Promise.all([
       getTotalCfg(role),
       getDpCfg(role,year,month),
+      getBonusCfg(role,year,month),
       getBillTokToKey(role),
     ]);
 
@@ -62,7 +70,8 @@ export async function GET(req){
       m.entries,m.year,m.month,
       billTokToKey,
       totalCfg,
-      dpCfg
+      dpCfg,
+      bonusCfg
     );
 
     return noStore({month:{id:m.id,role:m.role,year:m.year,month:m.month,isLocked:m.isLocked},entries:m.entries,statsByStaffId});

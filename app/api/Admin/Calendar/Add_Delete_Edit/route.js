@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 export const dynamic="force-dynamic";
 
 import {
-  roleOf,toInt,normTotalCfg,normDpCfg,
+  roleOf,toInt,normTotalCfg,normDpCfg,normBonusCfg,
   syncShiftBillCodes,getMonth,getStaff,
   computeStaffStats,parseCell
 } from "../Math/Calculations";
@@ -11,12 +11,14 @@ import {
 import {
   getTotalCfg,
   getDpCfg,
+  getBonusCfg,
   getBillTokToKey,
   getCellLookups,
   invalidateDayCard,
   invalidateBills,
   invalidateTotal,
   invalidateDp,
+  invalidateBonus,
 } from "../cache";
 
 const noStore=(p,s=200)=>{const r=NextResponse.json(p,{status:s});r.headers.set("Cache-Control","no-store");return r;};
@@ -43,6 +45,15 @@ export async function POST(req){
       const s=await prisma.calendarDP.upsert({where:{role_year_month:{role,year,month}},update:{dpCfg:cfg},create:{role,year,month,dpCfg:cfg},select:{dpCfg:1}});
       invalidateDp(role,year,month);
       return noStore({dpCfg:normDpCfg(s?.dpCfg)});
+    }
+
+    if(action==="bonusCfgSet"){
+      const month=toInt(b.month),year=toInt(b.year);
+      if(!month||!year) return noStore({error:"Missing month/year"},400);
+      const cfg=normBonusCfg(b?.bonusCfg);
+      const s=await prisma.calendarBonus.upsert({where:{role_year_month:{role,year,month}},update:{threshold:cfg.threshold},create:{role,year,month,threshold:cfg.threshold},select:{threshold:1}});
+      invalidateBonus(role,year,month);
+      return noStore({bonusCfg:normBonusCfg(s)});
     }
 
     if(action==="createSchedule"){
@@ -101,17 +112,18 @@ export async function POST(req){
         create:{monthId:m.id,role:m.role,staffId:staff.id,day,shiftCodeId:shiftCodeId||null,shiftRole:shiftCodeId?m.role:null,billCodeId:billCodeId||null,billRole:billCodeId?m.role:null,note},
       });
 
-      const [entries,totalCfg,dpCfg,billTokToKey]=await Promise.all([
+      const [entries,totalCfg,dpCfg,bonusCfg,billTokToKey]=await Promise.all([
         prisma.schedule.findMany({
           where:{monthId:m.id,staffId:staff.id},
           select:{day:1,staffId:1,shiftCode:{select:{code:1,hours:1}},billCode:{select:{code:1,multiplier:1}}}
         }),
         getTotalCfg(m.role),
         getDpCfg(m.role,m.year,m.month),
+        getBonusCfg(m.role,m.year,m.month),
         getBillTokToKey(m.role),
       ]);
 
-      const stats=computeStaffStats(staff.id,entries,m.year,m.month,billTokToKey,totalCfg,dpCfg);
+      const stats=computeStaffStats(staff.id,entries,m.year,m.month,billTokToKey,totalCfg,dpCfg,bonusCfg);
 
       return noStore({ok:true,stats});
     }

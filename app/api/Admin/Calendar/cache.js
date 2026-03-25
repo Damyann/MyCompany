@@ -6,7 +6,9 @@ import {
   toInt,
   normTotalCfg,
   normDpCfg,
+  normBonusCfg,
   DEF_TOTAL,
+  DEFAULT_BONUS_THRESHOLD,
   ensureBills,
   buildBillTokToKey,
   buildCellLookups,
@@ -40,6 +42,8 @@ export const invalidateBills = (role) => {
 export const invalidateTotal = (role) => _c.delete(`${rk(role)}total`);
 export const invalidateDp = (role, year, month) =>
   _c.delete(`${rk(role)}dp:${toInt(year)}:${toInt(month)}`);
+export const invalidateBonus = (role, year, month) =>
+  _c.delete(`${rk(role)}bonus:${toInt(year)}:${toInt(month)}`);
 
 export const getTotalCfg = (role) =>
   _get(`${rk(role)}total`, async () => {
@@ -70,6 +74,22 @@ export const getDpCfg = (role, year, month) =>
       });
     }
     return normDpCfg(row?.dpCfg);
+  });
+
+export const getBonusCfg = (role, year, month) =>
+  _get(`${rk(role)}bonus:${toInt(year)}:${toInt(month)}`, async () => {
+    const y = toInt(year), m = toInt(month);
+    let row = await prisma.calendarBonus.findUnique({
+      where: { role_year_month: { role, year: y, month: m } },
+      select: { threshold: 1 },
+    });
+    if (!row) {
+      row = await prisma.calendarBonus.create({
+        data: { role, year: y, month: m, threshold: DEFAULT_BONUS_THRESHOLD },
+        select: { threshold: 1 },
+      });
+    }
+    return normBonusCfg(row);
   });
 
 export const getDayCard = (role) =>

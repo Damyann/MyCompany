@@ -7,7 +7,7 @@ export default function Calendar_Settings({
   calcOpen, closeCalc, calcTab, setCalcTab,
   dcErr, billsErr, dc, dcBusy, dcMoveSection, setDc, dcOpenCodeEdit, dcAddCode, dcSaveSection, dcDelSection, dcAddSection, loadDayCard,
   bills, billsBusy, billDelCode, billDelCodeDirect, billUpdateCode, shiftHours, shiftAutoByHours, setBills, billAddCode, loadBills
-  , totalCfg, setTotalCfg, dpMonth, dpYear, dpCfg, setDpCfg
+  , totalCfg, setTotalCfg, dpMonth, dpYear, dpCfg, setDpCfg, bonusCfg, setBonusCfg
 }) {
   const billMode = calcTab !== "calc";
   const byHours = (codes) => { const g = groupCodes(codes); if (Array.isArray(g)) { const o = { 4: [], 8: [], 12: [], 16: [], x: [] }; for (const it of g) { o[it.h] = it.list || [] } return o } return g || {} };
@@ -38,6 +38,32 @@ export default function Calendar_Settings({
     await billDelCodeDirect?.(billEdit.billId, billEdit.codeId);
     if (!billsBusy) setBillEdit(null);
   };
+  const countWorkdays = (y, m) => {
+    if (!y || !m) return 0;
+    let n = 0, dim = new Date(y, m, 0).getDate();
+    for (let d = 1; d <= dim; d++) {
+      const wd = new Date(y, m - 1, d).getDay();
+      if (wd !== 0 && wd !== 6) n++;
+    }
+    return n;
+  };
+  const countYearWorkdays = y => {
+    if (!y) return 0;
+    let n = 0;
+    for (let m = 1; m <= 12; m++) n += countWorkdays(y, m);
+    return n;
+  };
+  const fmtBonus = v => {
+    const n = Number(v);
+    if (!Number.isFinite(n)) return "22";
+    return Number.isInteger(n) ? String(n) : String(n);
+  };
+  const parseBonus = v => {
+    const s = (v ?? "").toString().replace(/,/g, ".").trim();
+    if (!s) return 22;
+    const n = Number(s);
+    return Number.isFinite(n) ? Math.max(0, Math.round(n * 2) / 2) : null;
+  };
 
   const dpDim = (dpYear && dpMonth) ? new Date(dpYear, dpMonth, 0).getDate() : 31;
   const [dpDay, setDpDay] = useState(1);
@@ -55,6 +81,17 @@ export default function Calendar_Settings({
   }, [shiftAutoByHours]);
   const dpToggle = code => { const k = norm(code), day = String(dpDay); setDpCfg?.(c => { const n = { ...(c || {}) }; const s = new Set((n[day] || []).map(norm)); s.has(k) ? s.delete(k) : s.add(k); const a = [...s].sort(); a.length ? n[day] = a : delete n[day]; return n }) };
   const dpClear = () => { const day = String(dpDay); setDpCfg?.(c => { const n = { ...(c || {}) }; delete n[day]; return n }) };
+  const [bonusInput, setBonusInput] = useState(fmtBonus(bonusCfg?.threshold));
+  useEffect(() => { setBonusInput(fmtBonus(bonusCfg?.threshold)) }, [bonusCfg?.threshold]);
+  const bonusMonthWorkdays = useMemo(() => countWorkdays(dpYear, dpMonth), [dpYear, dpMonth]);
+  const bonusYearWorkdays = useMemo(() => countYearWorkdays(dpYear), [dpYear]);
+  const bonusCommit = () => {
+    const next = parseBonus(bonusInput);
+    const fallback = Number(bonusCfg?.threshold) || 22;
+    const threshold = next == null ? fallback : next;
+    setBonusInput(fmtBonus(threshold));
+    if (threshold !== fallback) setBonusCfg?.(c => ({ ...(c || {}), threshold }));
+  };
 
 
   return (<>
@@ -223,10 +260,11 @@ export default function Calendar_Settings({
               {!!billsErr && <div className="calc-err">{billsErr}</div>}
 
               <div className="calc-list">
-                <div className="calc-head"><div>СМЕТКА</div><div>КОДОВЕ</div></div>
+                <div className="calc-head"><div>СМЕТКА</div><div>КОДОВЕ
+                  </div></div>
 
                 {(bills || []).map(b => {
-                  const name = (b.name || "").toString().trim(); const isShifts = /^shifts$/i.test(name); const isTotal = /^total$/i.test(name); const isDP = /^dp$/i.test(name); return (
+                  const name = (b.name || "").toString().trim(); const isShifts = /^shifts$/i.test(name); const isTotal = /^total$/i.test(name); const isDP = /^dp$/i.test(name); const isBonus = /^bonus$/i.test(name); return (
                     <div key={b.id} className="calc-row">
                       <div className="calc-sec"><div className="bill-name">{b.name}</div></div>
 
@@ -301,6 +339,39 @@ export default function Calendar_Settings({
                               </div>
                             </div>
                           )}
+                          {isBonus && (
+                            <div className="calc-group hx">
+                              <div className="bonus-config">
+                                <div className="bonus-field">
+                                  <div className="bonus-field-label">Праг</div>
+                                  <div className="bonus-field-row">
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      step="0.5"
+                                      className="bonus-threshold-inp"
+                                      value={bonusInput}
+                                      onChange={e => setBonusInput(e.target.value)}
+                                      onBlur={bonusCommit}
+                                      onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); e.currentTarget.blur() } }}
+                                      disabled={!dpMonth || !dpYear}
+                                    />
+                                    <span className="bonus-field-suffix">смени</span>
+                                  </div>
+                                </div>
+                                <div className="bonus-mini-panels">
+                                  <div className="bonus-mini-panel">
+                                    <span>Месец</span>
+                                    <b>{dpMonth && dpYear ? bonusMonthWorkdays : "—"}</b>
+                                  </div>
+                                  <div className="bonus-mini-panel">
+                                    <span>Година</span>
+                                    <b>{dpYear ? bonusYearWorkdays : "—"}</b>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                           {isTotal && (
                             <div className="calc-group hx">
                               <div className="calc-group-list bill-total-toggles">
@@ -313,7 +384,7 @@ export default function Calendar_Settings({
                             </div>
                           )}
 
-                          {(!isShifts && !isTotal && !isDP) && (
+                          {(!isShifts && !isTotal && !isDP && !isBonus) && (
                             <div className="calc-group hx">
                               <div className="calc-group-list">
                                 {(b.codes || []).filter(c => c && c.isActive !== false).length

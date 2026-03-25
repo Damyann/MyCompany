@@ -32,6 +32,7 @@ export const getDayCard=role=>getCalendar({dayCard:1,role});
 export const getBills=role=>getCalendar({bills:1,role});
 export const getCalendarSettings=role=>getCalendar({settings:1,role});
 export const getCalendarDP=(role,month,year)=>getCalendar({dpCfg:1,role,month,year});
+export const getCalendarBonus=(role,month,year)=>getCalendar({bonusCfg:1,role,month,year});
 
 // --- POST actions ---
 export const createSchedule=(role,month,year)=>postCalendar({action:"createSchedule",role,month,year});
@@ -66,3 +67,4 @@ export const billCodeUpdate=(role,codeId,code,multiplier)=>postCalendar({action:
 // Settings
 export const saveCalendarTotalCfg=(role,totalCfg)=>postCalendar({action:"totalCfgSet",role,totalCfg:totalCfg??{}});
 export const saveCalendarDP=(role,month,year,dpCfg)=>postCalendar({action:"dpCfgSet",role,month,year,dpCfg:dpCfg??{}});
+export const saveCalendarBonus=(role,month,year,bonusCfg)=>postCalendar({action:"bonusCfgSet",role,month,year,bonusCfg:bonusCfg??{}});
