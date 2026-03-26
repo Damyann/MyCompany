@@ -1,16 +1,15 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
-import { groupCodes, prettyCode, norm, sortBillCodesByNumber } from "./Calendar_Math";
+import { useState } from "react";
+import { prettyCode, norm } from "./Calendar_Math";
+import Calculations_Panel from "../../Design/Calculations_Panel.jsx";
 
 export default function Calendar_Settings({
   dcEdit, dcCloseCodeEdit, dcEditCode, setDcEditCode, dcEditHours, setDcEditHours, dcEditDel, setDcEditDel, dcEditConfirm, setDcEditConfirm, dcEditBusy, dcSaveCodeEdit, dcDeleteCodeEdit,
   calcOpen, closeCalc, calcTab, setCalcTab,
   dcErr, billsErr, dc, dcBusy, dcMoveSection, setDc, dcOpenCodeEdit, dcAddCode, dcSaveSection, dcDelSection, dcAddSection, loadDayCard,
-  bills, billsBusy, billDelCode, billDelCodeDirect, billUpdateCode, shiftHours, shiftAutoByHours, setBills, billAddCode, loadBills
-  , totalCfg, setTotalCfg, dpMonth, dpYear, dpCfg, setDpCfg, bonusCfg, setBonusCfg
+  bills, billsBusy, billDelCode, billDelCodeDirect, billUpdateCode, shiftHours, shiftAutoByHours, setBills, billAddCode, loadBills,
+  totalCfg, setTotalCfg, dpMonth, dpYear, dpCfg, setDpCfg, bonusCfg, setBonusCfg
 }) {
-  const billMode = calcTab !== "calc";
-  const byHours = (codes) => { const g = groupCodes(codes); if (Array.isArray(g)) { const o = { 4: [], 8: [], 12: [], 16: [], x: [] }; for (const it of g) { o[it.h] = it.list || [] } return o } return g || {} };
   const canDel = ((dcEditConfirm || "").toString().trim().toLowerCase() === "del");
   const [billEdit, setBillEdit] = useState(null);
   const [billEditCode, setBillEditCode] = useState("");
@@ -38,60 +37,6 @@ export default function Calendar_Settings({
     await billDelCodeDirect?.(billEdit.billId, billEdit.codeId);
     if (!billsBusy) setBillEdit(null);
   };
-  const fmtBonus = v => {
-    const n = Number(v);
-    if (!Number.isFinite(n)) return "22";
-    return Number.isInteger(n) ? String(n) : String(n);
-  };
-  const parseBonus = v => {
-    const s = (v ?? "").toString().replace(/,/g, ".").trim();
-    if (!s) return 22;
-    const n = Number(s);
-    return Number.isFinite(n) ? Math.max(0, Math.round(n * 2) / 2) : null;
-  };
-  const totalKeys = ["Shifts", "SICK", "PH", "Bonus", "DP"];
-  const normTotalDraft = v => Object.fromEntries(totalKeys.map(k => [k, v?.[k] !== false]));
-  const sameTotalCfg = (a, b) => totalKeys.every(k => (a?.[k] !== false) === (b?.[k] !== false));
-  const monthNamesBg = ["Януари", "Февруари", "Март", "Април", "Май", "Юни", "Юли", "Август", "Септември", "Октомври", "Ноември", "Декември"];
-
-  const dpDim = (dpYear && dpMonth) ? new Date(dpYear, dpMonth, 0).getDate() : 31;
-  const [dpDay, setDpDay] = useState(1);
-  useEffect(() => { if (dpDay > dpDim) setDpDay(dpDim || 1) }, [dpDim]);
-  const dpSel = useMemo(() => new Set(((dpCfg || {})[String(dpDay)] || []).map(norm)), [dpCfg, dpDay]);
-  const dpOpts = useMemo(() => {
-    const o = {}; for (const h of [4, 8, 12, 16]) {
-      const seen = new Set(), list = [];
-      for (const sec of (shiftAutoByHours?.[h] || [])) for (const g of (sec.groups || [])) for (const c of (g.codes || [])) {
-        const k = norm(c); if (!k || seen.has(k)) continue; seen.add(k); list.push(c)
-      }
-      if (list.length) o[h] = list
-    }
-    return o
-  }, [shiftAutoByHours]);
-  const dpToggle = code => { const k = norm(code), day = String(dpDay); setDpCfg?.(c => { const n = { ...(c || {}) }; const s = new Set((n[day] || []).map(norm)); s.has(k) ? s.delete(k) : s.add(k); const a = [...s].sort(); a.length ? n[day] = a : delete n[day]; return n }) };
-  const dpClear = () => { const day = String(dpDay); setDpCfg?.(c => { const n = { ...(c || {}) }; delete n[day]; return n }) };
-  const [totalDraft, setTotalDraft] = useState(normTotalDraft(totalCfg));
-  const [totalSaving, setTotalSaving] = useState(false);
-  useEffect(() => { setTotalDraft(normTotalDraft(totalCfg)) }, [totalCfg]);
-  const totalDirty = !sameTotalCfg(totalDraft, totalCfg);
-  const totalSave = async () => {
-    if (!totalDirty || totalSaving) return;
-    try { setTotalSaving(true); await setTotalCfg?.(totalDraft) } catch {} finally { setTotalSaving(false) }
-  };
-  const [bonusInput, setBonusInput] = useState(fmtBonus(bonusCfg?.threshold));
-  const [bonusSaving, setBonusSaving] = useState(false);
-  useEffect(() => { setBonusInput(fmtBonus(bonusCfg?.threshold)) }, [bonusCfg?.threshold]);
-  const bonusMonthWorkdays = Number.isFinite(Number(bonusCfg?.monthWorkdays)) ? Math.max(0, Math.trunc(Number(bonusCfg.monthWorkdays))) : 0;
-  const bonusYearWorkdays = Number.isFinite(Number(bonusCfg?.yearWorkdays)) ? Math.max(0, Math.trunc(Number(bonusCfg.yearWorkdays))) : 0;
-  const bonusMonthName = dpMonth >= 1 && dpMonth <= 12 ? monthNamesBg[dpMonth - 1] : "";
-  const bonusParsed = parseBonus(bonusInput);
-  const bonusCurrent = Number.isFinite(Number(bonusCfg?.threshold)) ? Number(bonusCfg.threshold) : 22;
-  const bonusDirty = bonusParsed != null && bonusParsed !== bonusCurrent;
-  const bonusSave = async () => {
-    if (!bonusDirty || bonusParsed == null || bonusSaving || !dpMonth || !dpYear) return;
-    try { setBonusSaving(true); await setBonusCfg?.({ ...(bonusCfg || {}), threshold: bonusParsed }) } catch {} finally { setBonusSaving(false) }
-  };
-
 
   return (<>
     {dcEdit && (
@@ -130,7 +75,6 @@ export default function Calendar_Settings({
         </div>
       </div>
     )}
-
 
     {billEdit && (
       <div className="dc-edit-box" onMouseDown={billCloseEdit}>
@@ -172,264 +116,7 @@ export default function Calendar_Settings({
         </div>
       </div>
     )}
-    {calcOpen && (
-      <div className="calc-box" onMouseDown={closeCalc}>
-        <div className={"calc-window" + (billMode ? " bill-mode" : "")} onMouseDown={e => e.stopPropagation()}>
-          <button type="button" className="modal-x" onClick={closeCalc} aria-label="Close">×</button>
 
-          <div className="calc-tabs">
-            <button type="button" className={"calc-tab" + (!billMode ? " active" : "")} onClick={() => setCalcTab("calc")}>КОДОВЕ</button>
-            <button type="button" className={"calc-tab" + (billMode ? " active" : "")} onClick={() => setCalcTab("bill")}>СМЕТКИ</button>
-          </div>
-
-          {!billMode ? (
-            <>
-              <h3>КОДОВЕ</h3>
-              {!!dcErr && <div className="calc-err">{dcErr}</div>}
-
-              <div className="calc-list">
-                <div className="calc-head"><div>СЕКЦИЯ</div><div>КОДОВЕ</div><div>ДЕЙСТВИЯ</div></div>
-
-                {(dc || []).map(s => {
-                  const groups = byHours((s.codes || []).filter(c => c && c.isActive !== false));
-                  return (
-                    <div key={s.id} className="calc-row">
-                      <div className="calc-sec">
-                        <div className="calc-move">
-                          <button type="button" className="calc-move-btn" onClick={() => dcMoveSection(s.id, -1)} disabled={dcBusy}>▲</button>
-                          <button type="button" className="calc-move-btn" onClick={() => dcMoveSection(s.id, 1)} disabled={dcBusy}>▼</button>
-                        </div>
-                        <input className="calc-inp" value={s.name || ""}
-                          onChange={e => setDc(a => a.map(x => x.id === s.id ? { ...x, name: e.target.value } : x))}
-                          onBlur={() => dcSaveSection(s)}
-                          placeholder="име на секция"
-                          autoComplete="off"
-                          disabled={dcBusy}
-                        />
-                      </div>
-
-                      <div className="calc-codes">
-                        <div className="calc-chips">
-                          {[4, 8, 12, 16].map(h => (
-                            <div key={h} className={"calc-group h" + h}>
-                              <div className="calc-group-title">{h}H</div>
-                              <div className="calc-group-list">
-                                {(groups[h] || []).length ? (groups[h] || []).map(c => (
-                                  <button key={c.id} type="button" className="calc-chip" onClick={() => dcOpenCodeEdit(s.id, c)} disabled={dcBusy} title="Edit">
-                                    {prettyCode(c.code)}
-                                  </button>
-                                )) : <div className="calc-empty">—</div>}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-
-                        <div className="calc-addline">
-                          <input className="calc-code-inp" value={s._code || ""}
-                            onChange={e => setDc(a => a.map(x => x.id === s.id ? { ...x, _code: e.target.value } : x))}
-                            placeholder="код + Enter" autoComplete="off" disabled={dcBusy}
-                            onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); dcAddCode(s) } }}
-                          />
-                          <select className="calc-hours" value={s._hours || 8}
-                            onChange={e => setDc(a => a.map(x => x.id === s.id ? { ...x, _hours: Number(e.target.value) } : x))}
-                            title="Hours" disabled={dcBusy}
-                          >
-                            <option value={4}>4h</option><option value={8}>8h</option><option value={12}>12h</option><option value={16}>16h</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div className="calc-actions">
-                        <button type="button" className="calc-save" onClick={() => dcSaveSection(s)} disabled={dcBusy}>Save</button>
-                        <button type="button" className="calc-del" onClick={() => dcDelSection(s)} disabled={dcBusy}>Delete</button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="calc-bottom">
-                <button type="button" className="calc-add" disabled={dcBusy} onClick={dcAddSection}>+ Section</button>
-                <button type="button" className="calc-reload" disabled={dcBusy} onClick={() => loadDayCard(1)}>Reload</button>
-              </div>
-            </>
-          ) : (
-            <>
-              <h3>СМЕТКИ</h3>
-              {!!billsErr && <div className="calc-err">{billsErr}</div>}
-
-              <div className="calc-list">
-                <div className="calc-head"><div>СМЕТКА</div><div>КОДОВЕ
-                  </div></div>
-
-                {(bills || []).map(b => {
-                  const name = (b.name || "").toString().trim();
-                  const isShifts = /^shifts$/i.test(name), isTotal = /^total$/i.test(name), isDP = /^dp$/i.test(name), isBonus = /^bonus$/i.test(name), isSick = /^sick$/i.test(name), isPH = /^ph$/i.test(name), isNights = /^nights$/i.test(name), isInlineBill = isSick || isPH || isNights;
-                  return (
-                    <div key={b.id} className="calc-row">
-                      <div className="calc-sec"><div className="bill-name">{b.name}</div></div>
-
-                      <div className={"calc-codes" + (isInlineBill ? " bill-inline" : "")}>
-                        <div className="calc-chips">
-                          {isShifts && Array.isArray(shiftHours) && shiftHours.some(h => (shiftAutoByHours?.[h] || []).length) ? (
-                            <div className="calc-group hx bill-auto">
-                              <div className="bill-auto-hours">
-                                {shiftHours.filter(h => (shiftAutoByHours?.[h] || []).length).map(h => (
-                                  <div key={h} className="bill-auto-hour">
-                                    <div className="bill-auto-hour-title">{h}h</div>
-                                    <div className="bill-auto-row">
-                                      {(shiftAutoByHours?.[h] || []).map(sec => (
-                                        <div key={sec.id} className="bill-auto-sec">
-                                          <div className="bill-auto-codes">
-                                            {(sec.groups || []).map(g => (g.codes || []).map(code => (
-                                              <span key={sec.id + "-" + g.base + "-" + code} className="calc-chip bill-chip-auto">{prettyCode(code)}</span>
-                                            )))}
-                                          </div>
-                                          <span className="bill-auto-src"><sup>{sec.name}</sup></span>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          ) : null}
-
-
-                          {isDP && (
-                            <div className="dp-boxwrap">
-                              <div className="dp-days">
-                                {[...Array.from({ length: 15 }, (_, i) => i + 1), 31, ...Array.from({ length: 15 }, (_, i) => i + 16)]
-                                  .map(d => {
-                                    const off = d > dpDim, has = ((dpCfg || {})[String(d)] || []).length; return (
-                                      <button
-                                        key={d}
-                                        type="button"
-                                        disabled={off}
-                                        className={
-                                          "dp-day"
-                                          + (d === 31 ? " dp-day--31" : "")
-                                          + (off ? " off" : "")
-                                          + (has ? " has" : "")
-                                          + (d === dpDay ? " sel" : "")
-                                        }
-                                        onClick={() => !off && setDpDay(d)}
-                                      >
-                                        {d}
-                                      </button>
-                                    )
-                                  })}
-                              </div>
-                              <div className="dp-picked">
-                                <div>Дата: <b>{String(dpDay).padStart(2, "0")}.{String(dpMonth || 0).padStart(2, "0")}.{dpYear || ""}</b></div>
-                                <button type="button" className="dp-clear" onClick={dpClear}>Clear</button>
-                              </div>
-                              <div className="dp-picklists">
-                                {Object.entries(dpOpts).map(([h, list]) => (
-                                  <div key={h} className="dp-hour">
-                                    <div className="dp-hour-title">{h}h</div>
-                                    <div className="dp-chips">
-                                      {list.map(code => {
-                                        const on = dpSel.has(norm(code)); return (
-                                          <button key={code} type="button" className={"dp-chip" + (on ? " on" : "")} onClick={() => dpToggle(code)}>{prettyCode(code)}</button>
-                                        )
-                                      })}
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          {isBonus && (
-                            <div className="calc-group hx">
-                              <div className="bonus-config">
-                                <div className="bonus-field-row bonus-field-row-main">
-                                  <span className="bonus-field-text">Брой смени за месеца</span>
-                                  <input
-                                    type="number"
-                                    min="0"
-                                    step="0.5"
-                                    className="bonus-threshold-inp"
-                                    value={bonusInput}
-                                    onChange={e => setBonusInput(e.target.value)}
-                                    disabled={!dpMonth || !dpYear || bonusSaving}
-                                  />
-                                  <button type="button" className="calc-save bonus-save" onClick={bonusSave} disabled={!bonusDirty || bonusParsed == null || !dpMonth || !dpYear || bonusSaving}>{bonusSaving ? "..." : "Save"}</button>
-                                </div>
-                                <div className="bonus-mini-panels">
-                                  <div className="bonus-mini-panel">
-                                    <span>Месец</span>
-                                    <b>{dpMonth && dpYear ? bonusMonthWorkdays : "—"}</b>
-                                    <small>{dpMonth && dpYear ? bonusMonthName : "—"}</small>
-                                  </div>
-                                  <div className="bonus-mini-panel">
-                                    <span>Година</span>
-                                    <b>{dpYear ? bonusYearWorkdays : "—"}</b>
-                                    <small>{dpYear || "—"}</small>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                          {isTotal && (
-                            <div className="calc-group hx">
-                              <div className="bill-total-config">
-                                <div className="calc-group-list bill-total-toggles">
-                                  {totalKeys.map(k => {
-                                    const on = totalDraft?.[k] !== false; return (
-                                      <button key={k} type="button" className={"bill-toggle " + (on ? "on" : "off")} onClick={() => setTotalDraft(c => ({ ...c, [k]: !on }))}>{k}</button>
-                                    )
-                                  })}
-                                </div>
-                                <button type="button" className="calc-save bill-total-save" onClick={totalSave} disabled={!totalDirty || totalSaving}>{totalSaving ? "..." : "Save"}</button>
-                              </div>
-                            </div>
-                          )}
-
-                          {(!isShifts && !isTotal && !isDP && !isBonus) && (
-                            <div className="calc-group hx">
-                              <div className="calc-group-list">
-                                {(b.codes || []).filter(c => c && c.isActive !== false).length
-                                  ? (() => {
-                                    const active = (b.codes || []).filter(c => c && c.isActive !== false);
-                                    const editable = isInlineBill;
-                                    const list = editable ? sortBillCodesByNumber(active) : active;
-                                    return list.map(c => editable ? (
-                                      <button key={c.id} type="button" className={"calc-chip bill-chip-edit"+(isPH?" bill-chip-ph":"")} onClick={()=>billOpenEdit(b,c)} disabled={billsBusy} title="Edit">{prettyCode(c.code)}{isPH?<span className="bill-mult">×{Number(c.multiplier||1)}</span>:null}</button>
-                                    ) : (
-                                      <button key={c.id} type="button" className="calc-chip bill-chip-del" onClick={() => billDelCode(b.id, c.id)} disabled={billsBusy} title="Del">
-                                        {prettyCode(c.code)}<i>×</i>
-                                      </button>
-                                    ));
-                                  })()
-                                  : <div className="calc-empty">—</div>}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        {(!isShifts && !isTotal && !isDP && !isBonus) && (
-                          <div className="calc-addline">
-                            <input className="calc-code-inp" value={b._code || ""}
-                              onChange={e => setBills(a => a.map(x => x.id === b.id ? { ...x, _code: e.target.value } : x))}
-                              placeholder="код + Enter" autoComplete="off" disabled={billsBusy}
-                              onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); billAddCode(b) } }}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-
-              <div className="calc-bottom">
-                <button type="button" className="calc-reload" disabled={billsBusy} onClick={() => loadBills?.(1)}>Reload</button>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-    )}
+    <Calculations_Panel calcOpen={calcOpen} closeCalc={closeCalc} calcTab={calcTab} setCalcTab={setCalcTab} dcErr={dcErr} billsErr={billsErr} dc={dc} dcBusy={dcBusy} dcMoveSection={dcMoveSection} setDc={setDc} dcOpenCodeEdit={dcOpenCodeEdit} dcAddCode={dcAddCode} dcSaveSection={dcSaveSection} dcDelSection={dcDelSection} dcAddSection={dcAddSection} loadDayCard={loadDayCard} bills={bills} billsBusy={billsBusy} billDelCode={billDelCode} billOpenEdit={billOpenEdit} shiftHours={shiftHours} shiftAutoByHours={shiftAutoByHours} setBills={setBills} billAddCode={billAddCode} loadBills={loadBills} totalCfg={totalCfg} setTotalCfg={setTotalCfg} dpMonth={dpMonth} dpYear={dpYear} dpCfg={dpCfg} setDpCfg={setDpCfg} bonusCfg={bonusCfg} setBonusCfg={setBonusCfg} />
   </>);
 }
