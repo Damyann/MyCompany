@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 const EASE = [0.4, 0, 0.2, 1];
@@ -42,33 +42,6 @@ const ChevronIcon = ({ className = "" }) => (
     <path d="M8 10.5l4 4 4-4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
-
-function MonthIcon({ className = "" }) {
-  const id = useId().replace(/:/g, "");
-  const gradientId = `mg_${id}`;
-  const fillId = `mf_${id}`;
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
-      <defs>
-        <linearGradient id={gradientId} x1="12" y1="4" x2="12" y2="22" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="currentColor" stopOpacity=".98" />
-          <stop offset=".6" stopColor="currentColor" stopOpacity=".82" />
-          <stop offset="1" stopColor="currentColor" stopOpacity=".64" />
-        </linearGradient>
-        <radialGradient id={fillId} cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(9.2 9) rotate(50) scale(15 12)">
-          <stop offset="0" stopColor="currentColor" stopOpacity=".14" />
-          <stop offset=".6" stopColor="currentColor" stopOpacity=".05" />
-          <stop offset="1" stopColor="currentColor" stopOpacity=".02" />
-        </radialGradient>
-      </defs>
-      <path d="M7.2 6.9h9.6c1.1 0 2 .9 2 2v9.1c0 1.1-.9 2-2 2H7.2c-1.1 0-2-.9-2-2V8.9c0-1.1.9-2 2-2Z" fill={`url(#${fillId})`} />
-      <path d="M7.2 6.9h9.6c1.1 0 2 .9 2 2v9.1c0 1.1-.9 2-2 2H7.2c-1.1 0-2-.9-2-2V8.9c0-1.1.9-2 2-2Z" stroke={`url(#${gradientId})`} strokeWidth="1.9" strokeLinejoin="round" />
-      <path d="M7.1 10.2h11.8" stroke="currentColor" strokeOpacity=".32" strokeWidth="1.15" strokeLinecap="round" />
-      <path d="M9 5.7v2.6M15 5.7v2.6" stroke={`url(#${gradientId})`} strokeWidth="1.9" strokeLinecap="round" />
-      <path d="M8.6 12.6h2.2M13.2 12.6h2.2M8.6 15.6h2.2M13.2 15.6h2.2" stroke="currentColor" strokeOpacity=".38" strokeWidth="1.1" strokeLinecap="round" />
-    </svg>
-  );
-}
 
 function FoldToggle({ open }) {
   return (
@@ -179,30 +152,15 @@ export default function Month_Button({ value = "-", items = [], disabled = false
                 onMouseEnter={() => setHover(true)}
                 onMouseLeave={() => setHover(false)}
                 whileTap={enabled ? { scale: 0.985 } : {}}
-                className={`relative inline-flex h-[42px] items-center px-4 transition-all duration-300 ${enabled ? "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/35" : "cursor-not-allowed"}`}
+                className={`relative inline-flex h-[42px] items-center justify-center px-[15px] text-center transition-all duration-300 ${enabled ? "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/35" : "cursor-not-allowed"}`}
               >
-                <div className="relative flex items-center gap-2.5">
+                <div className="relative flex items-center justify-center">
                   <div className="relative">
-                    <div className={`relative rounded-[8px] p-[5px] shadow-lg ${enabled ? "bg-gradient-to-br from-emerald-600 via-teal-700 to-emerald-700" : "bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900"}`}>
-                      <div className={`absolute inset-0 rounded-[8px] ${enabled ? "bg-[radial-gradient(120px_60px_at_50%_-10%,rgba(190,255,244,.18),transparent_55%),radial-gradient(90px_45px_at_82%_18%,rgba(80,170,255,.08),transparent_58%)]" : ""}`} />
-                      <div className={`absolute inset-0 rounded-[8px] blur-md ${enabled ? "bg-emerald-500/14" : "bg-gray-500/10"}`} />
-                      <div className="absolute inset-0 rounded-[8px] bg-gradient-to-br from-white/12 via-white/4 to-transparent" />
-                      <MonthIcon className={`relative z-10 h-[18px] w-[18px] ${enabled ? "text-white drop-shadow-[0_2px_10px_rgba(16,185,129,0.2)]" : "text-gray-400"}`} />
-                    </div>
-                  </div>
-                  <div className="relative h-5">
-                    <motion.div
-                      animate={enabled ? { opacity: hover ? [0.28, 0.5, 0.28] : [0.18, 0.34, 0.18] } : {}}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                      className={`h-full w-px rounded-full ${enabled ? "bg-gradient-to-b from-transparent via-emerald-500/40 to-transparent" : "bg-gradient-to-b from-transparent via-gray-600/35 to-transparent"}`}
-                    />
-                  </div>
-                  <div className="relative">
-                    <span className={`text-[14px] leading-none font-light tracking-[.03em] transition-all duration-300 ${enabled ? "text-white" : "text-gray-500"}`}>{currentLabel}</span>
+                    <span className={`block text-center text-[15px] font-bold leading-none tracking-[.02em] transition-all duration-300 ${enabled ? "text-white" : "text-gray-500"}`}>{currentLabel}</span>
                     <motion.div
                       animate={enabled && hover ? { scaleX: 1, opacity: 1 } : { scaleX: 0, opacity: 0 }}
                       transition={{ duration: 0.28, ease: EASE }}
-                      className={`absolute -bottom-1 left-0 right-0 h-px origin-left ${enabled ? "bg-gradient-to-r from-emerald-400 via-teal-300 to-transparent" : ""}`}
+                      className={`absolute -bottom-[6px] left-0 right-0 h-[2px] origin-left ${enabled ? "bg-gradient-to-r from-emerald-300 via-teal-300 to-transparent" : ""}`}
                     />
                   </div>
                 </div>
