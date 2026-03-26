@@ -76,11 +76,11 @@ function FoldToggle({ open }) {
       initial={false}
       animate={{ rotate: open ? 180 : 0 }}
       transition={{ type: "spring", stiffness: 420, damping: 28, mass: 0.7 }}
-      className="relative grid h-10 w-10 place-items-center rounded-[12px] border border-white/12 bg-[linear-gradient(180deg,rgba(10,21,34,.96),rgba(4,9,15,.96))] text-white/90 shadow-[0_12px_26px_rgba(0,0,0,.28),inset_0_1px_0_rgba(255,255,255,.05)]"
+      className="relative grid h-10 w-10 place-items-center rounded-xl border border-white/12 bg-[linear-gradient(180deg,rgba(10,21,34,.96),rgba(4,9,15,.96))] text-white/90 shadow-[0_12px_26px_rgba(0,0,0,.28),inset_0_1px_0_rgba(255,255,255,.05)]"
     >
-      <span className="absolute inset-[1px] rounded-[11px] bg-[radial-gradient(80px_42px_at_30%_18%,rgba(255,255,255,.08),transparent_64%)]" />
-      <span className="absolute inset-0 rounded-[12px] shadow-[inset_0_0_0_1px_rgba(0,255,210,.05)]" />
-      <ChevronIcon className="relative h-[18px] w-[18px]" />
+      <span className="absolute inset-px rounded-[11px] bg-[radial-gradient(80px_42px_at_30%_18%,rgba(255,255,255,.08),transparent_64%)]" />
+      <span className="absolute inset-0 rounded-xl shadow-[inset_0_0_0_1px_rgba(0,255,210,.05)]" />
+      <ChevronIcon className="relative h-4.5 w-4.5" />
     </motion.span>
   );
 }
