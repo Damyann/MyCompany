@@ -9,7 +9,7 @@ import Calendar_Settings from"./Calendar_Settings";
 import Calendar_Schedule from"./Calendar_Schedule";
 
 import{
-decodeCode,prettyCode,buildScheduleModel,buildMonthPickerModel,scheduleListToCodes,pickClosestCode,
+decodeCode,prettyCode,buildScheduleModel,scheduleListToCodes,pickClosestCode,
 getDaysInMonth,buildWeekdayByDay,getActiveSortedSections,buildShiftAuto,sortScheduleRows,buildDcByDay
 }from"./Calendar_Math";
 
@@ -30,7 +30,7 @@ const TOTAL_KEYS=["Shifts","SICK","PH","Bonus","DP"],DEF_TOTAL=Object.fromEntrie
 
 const[dropdownItems,setDropdownItems]=useState([]),[selected,setSelected]=useState("-"),[schedule,setSchedule]=useState(null);
 const[picker,setPicker]=useState(null),[pickTab,setPickTab]=useState("all"),[pickQ,setPickQ]=useState("");
-const[monthOpen,setMonthOpen]=useState(false),[activeDay,setActiveDay]=useState(null),[calcOpen,setCalcOpen]=useState(false),[calcTab,setCalcTab]=useState("calc");
+const[activeDay,setActiveDay]=useState(null),[calcOpen,setCalcOpen]=useState(false),[calcTab,setCalcTab]=useState("calc");
 
 const[bills,setBills]=useState([]),[billsErr,setBillsErr]=useState(""),[billsBusy,setBillsBusy]=useState(false);
 const[dc,setDc]=useState([]),[dcErr,setDcErr]=useState(""),[dcBusy,setDcBusy]=useState(false);
@@ -255,7 +255,6 @@ useEffect(()=>{if(schedule)setTimeout(()=>fitNames(),0)},[schedule]);
 const daysInMonth=schedule?getDaysInMonth(schedule.year,schedule.month):31;
 const weekdayByDay=schedule?buildWeekdayByDay(schedule.year,schedule.month,31):days.map(()=>"");
 const dcByDay=buildDcByDay(sortedRows,dcSorted,31);
-const {monthGroups,monthYears}=buildMonthPickerModel(dropdownItems);
 const saveCell=async(staffId,day,raw)=>{
   if(!schedule?.monthId||!staffId||schedule.isLocked)return;
   try{
@@ -269,7 +268,7 @@ useEffect(()=>{const t=gridScrollRef.current,h=hScrollRef.current,hd=headScrollR
 
 return(<div className="cal-wrap">
 <Calendar_Settings dcEdit={dcEdit} dcCloseCodeEdit={dcCloseCodeEdit} dcEditCode={dcEditCode} setDcEditCode={setDcEditCode} dcEditHours={dcEditHours} setDcEditHours={setDcEditHours} dcEditDel={dcEditDel} setDcEditDel={setDcEditDel} dcEditConfirm={dcEditConfirm} setDcEditConfirm={setDcEditConfirm} dcEditBusy={dcEditBusy} dcSaveCodeEdit={dcSaveCodeEdit} dcDeleteCodeEdit={dcDeleteCodeEdit} calcOpen={calcOpen} closeCalc={closeCalc} calcTab={calcTab} setCalcTab={setCalcTab} dcErr={dcErr} billsErr={billsErr} dc={dc} dcBusy={dcBusy} dcMoveSection={dcMoveSection} setDc={setDc} dcOpenCodeEdit={dcOpenCodeEdit} dcAddCode={dcAddCode} dcSaveSection={dcSaveSection} dcDelSection={dcDelSection} dcAddSection={dcAddSection} loadDayCard={loadDayCard} bills={bills} billsBusy={billsBusy} billDelCode={billDelCode} billDelCodeDirect={billDelCodeDirect} billUpdateCode={billUpdateCode} shiftHours={shiftHours} shiftAutoByHours={shiftAutoByHours} setBills={setBills} billAddCode={billAddCode} loadBills={loadBills} totalCfg={totalCfg} setTotalCfg={saveTotalCfgPersist} dpMonth={schedule?.month||0} dpYear={schedule?.year||0} dpCfg={dpCfg} setDpCfg={setDpCfgPersist} bonusCfg={bonusCfg} setBonusCfg={saveBonusCfgPersist}/>
-<Calendar_Month pickLabel={pickLabel} createOpen={createOpen} closeCreate={closeCreate} createRef={createRef} createCode={createCode} setCreateCode={setCreateCode} createErr={createErr} creating={creating} submitCreate={submitCreate} monthOpen={monthOpen} setMonthOpen={setMonthOpen} monthYears={monthYears} monthGroups={monthGroups} selected={selected} setSelected={setSelected} loadSchedule={loadSchedule} openCreate={openCreate} openCalc={openCalc} openPicker={openPicker}/>
+<Calendar_Month pickLabel={pickLabel} createOpen={createOpen} closeCreate={closeCreate} createRef={createRef} createCode={createCode} setCreateCode={setCreateCode} createErr={createErr} creating={creating} submitCreate={submitCreate} selected={selected} setSelected={setSelected} dropdownItems={dropdownItems} loadSchedule={loadSchedule} openCreate={openCreate} openCalc={openCalc} openPicker={openPicker}/>
 <Calendar_Pick title={`Избери ${pickLabel}`} picker={picker} setPicker={setPicker} loading={loadingStaff} pickTab={pickTab} setPickTab={setPickTab} pickQ={pickQ} setPickQ={setPickQ} addStaff={addStaff}/>
 <Calendar_Schedule days={days} daysInMonth={daysInMonth} weekdayByDay={weekdayByDay} dcByDay={dcByDay} dcSorted={dcSorted} activeDay={activeDay} setActiveDay={setActiveDay} topRef={topRef} gridScrollRef={gridScrollRef} headScrollRef={headScrollRef} namesRef={namesRef} sortedRows={sortedRows} setSchedule={setSchedule} tableRef={tableRef} saveCell={saveCell} statsByStaffId={schedule?.statsByStaffId||{}} hScrollRef={hScrollRef} hScrollW={hScrollW} statsLabels={statsLabels}/>
 </div>);
