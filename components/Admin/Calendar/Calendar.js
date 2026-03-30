@@ -57,7 +57,7 @@ const[hScrollW,setHScrollW]=useState(0);
 const topRef=useRef(null),gridScrollRef=useRef(null),tableRef=useRef(null),hScrollRef=useRef(null),headScrollRef=useRef(null),syncLock=useRef(false),createRef=useRef(null),namesRef=useRef(null);
 
 useEffect(()=>{const el=topRef.current;if(!el)return;const onWheel=e=>{el.scrollLeft+=e.deltaY;e.preventDefault()};el.addEventListener("wheel",onWheel,{passive:false});return()=>el.removeEventListener("wheel",onWheel)},[]);
-const fitNames=()=>{const wrap=namesRef.current;if(!wrap)return;const cards=wrap.querySelectorAll(".name-card");for(const card of cards){const txt=card.querySelector(".name-txt");if(!txt)continue;txt.style.display="block";txt.style.width="100%";txt.style.whiteSpace="nowrap";txt.style.overflow="hidden";txt.style.textOverflow="ellipsis";let fs=22,min=9;txt.style.fontSize=fs+"px";for(let i=0;i<80;i++){if(txt.scrollWidth<=txt.clientWidth+1&&txt.scrollHeight<=txt.clientHeight+1)break;fs-=.5;if(fs<min){fs=min;break}txt.style.fontSize=fs+"px"}}};
+const fitNames=()=>{const wrap=namesRef.current;if(!wrap)return;const cards=wrap.querySelectorAll("[data-name-card], .name-card");for(const card of cards){const txt=card.querySelector("[data-name-txt], .name-txt");if(!txt)continue;txt.style.display="block";txt.style.width="100%";txt.style.whiteSpace="nowrap";txt.style.overflow="hidden";txt.style.textOverflow="ellipsis";let fs=22,min=9;txt.style.fontSize=fs+"px";for(let i=0;i<80;i++){if(txt.scrollWidth<=txt.clientWidth+1&&txt.scrollHeight<=txt.clientHeight+1)break;fs-=.5;if(fs<min){fs=min;break}txt.style.fontSize=fs+"px"}}};
 const reindexSections=list=>(Array.isArray(list)?list:[]).map((s,i)=>({...s,sortOrder:i*10}));
 
 const loadSchedule=async code=>{
